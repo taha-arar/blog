@@ -24,7 +24,10 @@ public class ArticleController {
     public ResponseEntity<List<Article>> findAll() {
         System.out.println( "ArticleController.findAll()");
         List<Article> response = articleService.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        if(response.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+        }
+            return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 

@@ -3,6 +3,7 @@ package com.blog.service;
 import com.blog.model.Article;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +17,8 @@ public class ArticleServiceImpl implements ArticleService {
             new Article(3L, new Date(), null, "Spring Boot Security", "Secure your REST APIs with JWT and cookies.", "Jane Smith"),
             new Article(4L,  new Date(), null,"Spring Data JPA", "Simplify persistence layer with JPA repositories.", "Ali Ben Salem")
     );
+
+//        List<Article> articles = new ArrayList<>();
 
     public ArticleServiceImpl() {}
 
