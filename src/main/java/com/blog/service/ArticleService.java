@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ArticleService {
 
-    List<Article> findAll();
+/*    List<Article> findAll();
 
     Article findById(Long id);
 
@@ -18,5 +18,5 @@ public interface ArticleService {
 
     String active(Long id, Boolean active);
 
-    void delete(Long id);
+    void delete(Long id);*/
 }

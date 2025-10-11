@@ -1,107 +1,35 @@
 package com.blog.model;
 
 
-import java.util.Date;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
-public class Article {
 
-    private Long id;
-    private Date createdAt;
-    private Date updatedAt;
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+public class Article extends AbstractEntity<Long>{
+
+    @NotBlank(message = "Le titre ne peut pas être vide")
+    @Size(min = 3, message = "Le titre doit être plus que deux caractère")
     private String title;
+
+    @NotBlank(message = "Le contenu ne peut pas être vide")
+    @Size(min = 10, message = "Contenu insuffisant")
+    @Column(columnDefinition = "TEXT")
     private String content;
+
+    @NotBlank(message = "L'auteur ne peut pas être vide")
     private String author;
+
+    @NotNull(message = "Le statut doit être spécifier")
     private Boolean isActive = true;
 
-    public Article() {
-    }
-
-    public Article(Long id, Date createdAt, Date updatedAt, String title, String content, String author, Boolean isActive) {
-        this.id = id;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.title = title;
-        this.content = content;
-        this.author = author;
-        this.isActive = isActive;
-    }
-
-    public Article(Long id, Date createdAt, Date updatedAt, String title, String content, String author) {
-        this.id = id;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.title = title;
-        this.content = content;
-        this.author = author;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-
-    public Boolean getActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean active) {
-        isActive = active;
-    }
-
-    @Override
-    public String toString() {
-        return "Article{" +
-                "id=" + id +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", author='" + author + '\'' +
-                ", isActive=" + isActive +
-                '}';
-    }
 }

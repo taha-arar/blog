@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 public class ArticleServiceImpl implements ArticleService {
 
-    List<Article> articles = new ArrayList<>(Arrays.asList(
+/*    List<Article> articles = new ArrayList<>(Arrays.asList(
             new Article(1L, new Date(), null,  "Spring Boot Basics", "Learn how to build REST APIs with Spring Boot.", "Taha Arar", true),
             new Article(2L, new Date(), null, "Understanding Dependency Injection", "Explaining DI and its role in Spring.", "John Doe", false),
             new Article(3L, new Date(), null, "Spring Boot Security", "Secure your REST APIs with JWT and cookies.", "Jane Smith", true),
@@ -77,8 +77,8 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public String active(Long id, Boolean active) {
         Article existingArticle = findById(id);
-        if(existingArticle.getActive().equals(active)) return "Article already " + (active ? "active" : "deactivated");
-        existingArticle.setActive(active);
+        if(existingArticle.getIsActive().equals(active)) return "Article already " + (active ? "active" : "deactivated");
+        existingArticle.setIsActive(active);
         return active ? "Article activated successfully." : "Article deactivated successfully.";
     }
 
@@ -86,6 +86,6 @@ public class ArticleServiceImpl implements ArticleService {
     public void delete(Long id) {
         Article existingArticle = findById(id);
         articles.remove(existingArticle);
-    }
+    }*/
 
 }

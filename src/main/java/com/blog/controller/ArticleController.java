@@ -19,6 +19,7 @@ public class ArticleController {
         this.articleService = articleService;
     }
 
+/*
     @GetMapping("/list")
     public ResponseEntity<List<Article>> findAll() {
         System.out.println( "ArticleController.findAll()");
@@ -67,6 +68,7 @@ public class ArticleController {
         articleService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+*/
 
 
 
