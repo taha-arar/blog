@@ -14,4 +14,6 @@ public interface ArticleService {
 
     Long save(ArticleSaveDTO article);
 
+    Article update(Long id, ArticleSaveDTO article);
+
 }

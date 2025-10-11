@@ -62,4 +62,16 @@ public class ArticleServiceImpl implements ArticleService {
         return savedArticle.getId();
     }
 
+    @Override
+    public Article update(Long id, ArticleSaveDTO article) {
+        Article existingArticle = findById(id);
+
+        existingArticle.setTitle(article.getTitle());
+        existingArticle.setContent(article.getContent());
+        existingArticle.setAuthor(article.getAuthor());
+        existingArticle.setUpdatedAt(new Date());
+
+        return existingArticle;
+    }
+
 }

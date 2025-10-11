@@ -50,6 +50,12 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Article> update(@PathVariable Long id, @RequestBody ArticleSaveDTO article){
+        Article updated = articleService.update(id, article);
+        return ResponseEntity.status(HttpStatus.OK).body(updated);
+    }
+
 
 
 
