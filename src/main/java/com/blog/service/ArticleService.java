@@ -18,4 +18,5 @@ public interface ArticleService {
 
     String active(Long id, Boolean active);
 
+    void delete(Long id);
 }

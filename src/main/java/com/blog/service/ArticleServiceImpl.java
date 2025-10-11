@@ -82,4 +82,10 @@ public class ArticleServiceImpl implements ArticleService {
         return active ? "Article activated successfully." : "Article deactivated successfully.";
     }
 
+    @Override
+    public void delete(Long id) {
+        Article existingArticle = findById(id);
+        articles.remove(existingArticle);
+    }
+
 }
