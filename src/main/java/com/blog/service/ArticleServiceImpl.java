@@ -13,10 +13,10 @@ import java.util.List;
 public class ArticleServiceImpl implements ArticleService {
 
     List<Article> articles = new ArrayList<>(Arrays.asList(
-            new Article(1L, new Date(), null,  "Spring Boot Basics", "Learn how to build REST APIs with Spring Boot.", "Taha Arar"),
-            new Article(2L, new Date(), null, "Understanding Dependency Injection", "Explaining DI and its role in Spring.", "John Doe"),
-            new Article(3L, new Date(), null, "Spring Boot Security", "Secure your REST APIs with JWT and cookies.", "Jane Smith"),
-            new Article(4L,  new Date(), null,"Spring Data JPA", "Simplify persistence layer with JPA repositories.", "Ali Ben Salem")
+            new Article(1L, new Date(), null,  "Spring Boot Basics", "Learn how to build REST APIs with Spring Boot.", "Taha Arar", true),
+            new Article(2L, new Date(), null, "Understanding Dependency Injection", "Explaining DI and its role in Spring.", "John Doe", false),
+            new Article(3L, new Date(), null, "Spring Boot Security", "Secure your REST APIs with JWT and cookies.", "Jane Smith", true),
+            new Article(4L,  new Date(), null,"Spring Data JPA", "Simplify persistence layer with JPA repositories.", "Ali Ben Salem", false)
     ));
 
 //        List<Article> articles = new ArrayList<>();
@@ -72,6 +72,14 @@ public class ArticleServiceImpl implements ArticleService {
         existingArticle.setUpdatedAt(new Date());
 
         return existingArticle;
+    }
+
+    @Override
+    public String active(Long id, Boolean active) {
+        Article existingArticle = findById(id);
+        if(existingArticle.getActive().equals(active)) return "Article already " + (active ? "active" : "deactivated");
+        existingArticle.setActive(active);
+        return active ? "Article activated successfully." : "Article deactivated successfully.";
     }
 
 }

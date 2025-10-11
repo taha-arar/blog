@@ -16,4 +16,6 @@ public interface ArticleService {
 
     Article update(Long id, ArticleSaveDTO article);
 
+    String active(Long id, Boolean active);
+
 }

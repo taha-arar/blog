@@ -11,8 +11,19 @@ public class Article {
     private String title;
     private String content;
     private String author;
+    private Boolean isActive = true;
 
     public Article() {
+    }
+
+    public Article(Long id, Date createdAt, Date updatedAt, String title, String content, String author, Boolean isActive) {
+        this.id = id;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.title = title;
+        this.content = content;
+        this.author = author;
+        this.isActive = isActive;
     }
 
     public Article(Long id, Date createdAt, Date updatedAt, String title, String content, String author) {
@@ -73,6 +84,14 @@ public class Article {
     }
 
 
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
     @Override
     public String toString() {
         return "Article{" +
@@ -82,6 +101,7 @@ public class Article {
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 ", author='" + author + '\'' +
+                ", isActive=" + isActive +
                 '}';
     }
 }

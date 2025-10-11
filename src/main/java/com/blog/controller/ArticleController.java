@@ -56,6 +56,12 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 
+    @PatchMapping("/active/{id}")
+    public ResponseEntity<String> active(@PathVariable Long id, @RequestParam Boolean active){
+        String response = articleService.active(id, active);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 
 
 
