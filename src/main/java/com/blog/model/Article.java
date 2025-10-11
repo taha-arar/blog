@@ -1,5 +1,6 @@
 package com.blog.model;
 
+
 import java.util.Date;
 
 public class Article {
@@ -71,4 +72,16 @@ public class Article {
         this.author = author;
     }
 
+
+    @Override
+    public String toString() {
+        return "Article{" +
+                "id=" + id +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", author='" + author + '\'' +
+                '}';
+    }
 }

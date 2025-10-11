@@ -1,13 +1,11 @@
 package com.blog.controller;
 
+import com.blog.dto.ArticleSaveDTO;
 import com.blog.model.Article;
 import com.blog.service.ArticleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -43,6 +41,13 @@ public class ArticleController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur est survenue lors de la recherche de l'article avec ID: "+id);
         }
 
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<Long> save(@RequestBody ArticleSaveDTO article) {
+        System.out.println("from controller" +article.toString());
+        Long id = articleService.save(article);
+        return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
 

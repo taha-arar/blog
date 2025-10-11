@@ -1,23 +1,28 @@
 package com.blog.service;
 
+import com.blog.dto.ArticleSaveDTO;
 import com.blog.model.Article;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {
 
-    List<Article> articles = Arrays.asList(
+    List<Article> articles = new ArrayList<>(Arrays.asList(
             new Article(1L, new Date(), null,  "Spring Boot Basics", "Learn how to build REST APIs with Spring Boot.", "Taha Arar"),
             new Article(2L, new Date(), null, "Understanding Dependency Injection", "Explaining DI and its role in Spring.", "John Doe"),
             new Article(3L, new Date(), null, "Spring Boot Security", "Secure your REST APIs with JWT and cookies.", "Jane Smith"),
             new Article(4L,  new Date(), null,"Spring Data JPA", "Simplify persistence layer with JPA repositories.", "Ali Ben Salem")
-    );
+    ));
 
 //        List<Article> articles = new ArrayList<>();
 
-    public ArticleServiceImpl() {}
+    public ArticleServiceImpl() {
+    }
 
     @Override
     public List<Article> findAll() {
@@ -26,8 +31,35 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Article findById(Long id) {
-        return articles.stream().filter(
-                article -> article.getId().equals(id)).findFirst().orElseThrow(() -> new IllegalArgumentException("Article not found"));
+        return articles.stream().filter(article -> article.getId().equals(id)).findFirst().orElseThrow(() -> new IllegalArgumentException("Article not found"));
+    }
+
+    @Override
+    public Long save(ArticleSaveDTO article) {
+        System.out.println("From Service: "+article.toString());
+
+//        Long id = null;
+//        if(articles.isEmpty()){
+//            id = 1L;
+//        } else {
+//            id = articles.get(articles.size()-1).getId() +1;
+//        }
+//        String title = article.getTitle();
+//        String content = article.getContent();
+//        String author = article.getAuthor();
+
+        Long id = articles.isEmpty() ? 1L : articles.getLast().getId() + 1;
+        Article savedArticle = new Article(id,
+                new Date(),
+                null,
+                article.getTitle(),
+                article.getContent(),
+                article.getAuthor());
+        System.out.println("Saved Article: "+savedArticle.toString());
+
+
+        articles.add(savedArticle);
+        return savedArticle.getId();
     }
 
 }
