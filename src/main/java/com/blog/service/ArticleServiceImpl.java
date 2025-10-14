@@ -1,16 +1,49 @@
 package com.blog.service;
 
+import com.blog.converter.ArticleMapper;
 import com.blog.dto.ArticleSaveDTO;
-import com.blog.model.Article;
+import com.blog.repository.ArticleRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+
 
 @Service
+@AllArgsConstructor
 public class ArticleServiceImpl implements ArticleService {
+
+    private final ArticleRepository articleRepository;
+    private final ArticleMapper articleMapper;
+
+    @Override
+    public ArticleSaveDTO save(ArticleSaveDTO article) {
+        if(articleRepository.existsByTitle(article.getTitle()))
+            throw new IllegalArgumentException("Article: "+article.getTitle()+" already exists");
+
+        if(article.getContent().length() < 5 || article.getContent().length() > 10 )
+            throw new IllegalArgumentException("Content has to be between 5 and 10 characters");
+
+        return articleMapper.toDTO(
+                articleRepository.save(
+                        articleMapper.toEntity(
+                                article)
+                )
+        );
+    }
+
+
+    /*---Méthodes Helper---*/
+
+/*    Article toEntity(ArticleSaveDTO article){
+        Article toBeSaved = new Article();
+
+        toBeSaved.setTitle(article.getTitle());
+        toBeSaved.setContent(article.getContent());
+        toBeSaved.setAuthor(article.getAuthor());
+        return toBeSaved;
+    }*/
+
+
 
 /*    List<Article> articles = new ArrayList<>(Arrays.asList(
             new Article(1L, new Date(), null,  "Spring Boot Basics", "Learn how to build REST APIs with Spring Boot.", "Taha Arar", true),

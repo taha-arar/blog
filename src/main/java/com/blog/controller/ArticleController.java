@@ -3,11 +3,13 @@ package com.blog.controller;
 import com.blog.dto.ArticleSaveDTO;
 import com.blog.model.Article;
 import com.blog.service.ArticleService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/articles")
@@ -17,6 +19,18 @@ public class ArticleController {
 
     public ArticleController(ArticleService articleService) {
         this.articleService = articleService;
+    }
+
+
+    @PostMapping
+    public ResponseEntity<Object> save(@RequestBody ArticleSaveDTO article){
+        try {
+            ArticleSaveDTO savedArticle = articleService.save(article);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedArticle);
+        } catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
     }
 
 /*

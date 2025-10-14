@@ -19,10 +19,11 @@ public class Article extends AbstractEntity<Long>{
 
     @NotBlank(message = "Le titre ne peut pas être vide")
     @Size(min = 3, message = "Le titre doit être plus que deux caractère")
+    @Column(unique = true, nullable = false)
     private String title;
 
     @NotBlank(message = "Le contenu ne peut pas être vide")
-    @Size(min = 10, message = "Contenu insuffisant")
+    @Size(min = 5, max = 10, message = "Contenu has to be between 5 and 10 characters")
     @Column(columnDefinition = "TEXT")
     private String content;
 

@@ -19,4 +19,6 @@ public interface ArticleService {
     String active(Long id, Boolean active);
 
     void delete(Long id);*/
+
+    ArticleSaveDTO save(ArticleSaveDTO article);
 }
