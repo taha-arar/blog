@@ -56,7 +56,18 @@ public class ArticleController {
         } catch (Exception e){
             return ResponseEntity.status(500).body("Internal Server Error");
         }
+    }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> findById(@PathVariable("id") Long id) {
+        try {
+            Article article = articleService.findById(id);
+            return ResponseEntity.status(HttpStatus.OK).body(article);
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Error Server.");
+        }
     }
 
 

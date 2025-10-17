@@ -63,6 +63,20 @@ public class ArticleServiceImpl implements ArticleService {
         throw new IllegalArgumentException("Article not found with id: "+id);
     }
 
+    @Override
+    public Article findById(Long id) {
+
+        return articleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Article not found with id: "+id));
+
+
+/*        Optional<Article> article = articleRepository.findById(id);
+        if(article.isPresent()) {
+            return article.get();
+        }
+        throw new IllegalArgumentException("Article not found with id: "+id);*/
+    }
+
 /*    @Override
     public ArticleSaveDTO update(Long id, ArticleSaveDTO articleDTO) {
 

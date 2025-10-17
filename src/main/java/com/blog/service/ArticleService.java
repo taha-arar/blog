@@ -27,4 +27,6 @@ public interface ArticleService {
     ArticleSaveDTO update(Long id, ArticleSaveDTO article);
 
     String active(Long id, Boolean active);
+
+    Article findById(Long id);
 }
