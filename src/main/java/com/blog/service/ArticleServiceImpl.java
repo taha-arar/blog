@@ -50,6 +50,19 @@ public class ArticleServiceImpl implements ArticleService {
         throw new IllegalArgumentException("Article not found with id: "+id);
     }
 
+    @Override
+    public String active(Long id, Boolean active) {
+        Optional<Article> article = articleRepository.findById(id);
+        if(article.isPresent()) {
+            Article art = article.get();
+            if(art.getIsActive().equals(active)) return "Article already " + (active ? "active" : "deactivated");
+            art.setIsActive(active);
+            articleRepository.save(art);
+            return "Article " + (active ? "activated" : "deactivated") + " successfully.";
+        }
+        throw new IllegalArgumentException("Article not found with id: "+id);
+    }
+
 /*    @Override
     public ArticleSaveDTO update(Long id, ArticleSaveDTO articleDTO) {
 
