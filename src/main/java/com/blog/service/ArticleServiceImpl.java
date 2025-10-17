@@ -15,7 +15,23 @@ public class ArticleServiceImpl implements ArticleService {
     private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
 
-    @Override
+
+        @Override
+    public Long save(ArticleSaveDTO article) {
+        if(articleRepository.existsByTitle(article.getTitle()))
+            throw new IllegalArgumentException("Article: "+article.getTitle()+" already exists");
+
+        if(article.getContent().length() < 5 || article.getContent().length() > 10 )
+            throw new IllegalArgumentException("Content has to be between 5 and 10 characters");
+
+        return
+                articleRepository.save(
+                        articleMapper.toEntity(
+                                article)).getId();
+
+    }
+
+/*    @Override
     public ArticleSaveDTO save(ArticleSaveDTO article) {
         if(articleRepository.existsByTitle(article.getTitle()))
             throw new IllegalArgumentException("Article: "+article.getTitle()+" already exists");
@@ -29,7 +45,7 @@ public class ArticleServiceImpl implements ArticleService {
                                 article)
                 )
         );
-    }
+    }*/
 
 
     /*---Méthodes Helper---*/

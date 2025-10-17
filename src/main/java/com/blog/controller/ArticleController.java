@@ -21,8 +21,19 @@ public class ArticleController {
         this.articleService = articleService;
     }
 
+        @PostMapping
+    public ResponseEntity<Object> save(@RequestBody ArticleSaveDTO article){
+        try {
+            Long savedArticle = articleService.save(article);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedArticle);
+        } catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
 
-    @PostMapping
+    }
+
+
+/*    @PostMapping
     public ResponseEntity<Object> save(@RequestBody ArticleSaveDTO article){
         try {
             ArticleSaveDTO savedArticle = articleService.save(article);
@@ -31,7 +42,7 @@ public class ArticleController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
 
-    }
+    }*/
 
 /*
     @GetMapping("/list")
