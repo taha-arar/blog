@@ -21,13 +21,27 @@ public class ArticleController {
         this.articleService = articleService;
     }
 
-        @PostMapping
+    @PostMapping
     public ResponseEntity<Object> save(@RequestBody ArticleSaveDTO article){
         try {
             Long savedArticle = articleService.save(article);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedArticle);
         } catch (RuntimeException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody ArticleSaveDTO article){
+        try {
+            ArticleSaveDTO updated = articleService.update(id, article);
+            return ResponseEntity.status(HttpStatus.OK).body(updated);
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (WrongThreadException w){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(w.getMessage());
+        } catch (Exception e){
+            return ResponseEntity.status(500).body("Internal Server Error");
         }
 
     }

@@ -2,10 +2,12 @@ package com.blog.service;
 
 import com.blog.converter.ArticleMapper;
 import com.blog.dto.ArticleSaveDTO;
+import com.blog.model.Article;
 import com.blog.repository.ArticleRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 
 
 @Service
@@ -30,6 +32,42 @@ public class ArticleServiceImpl implements ArticleService {
                                 article)).getId();
 
     }
+
+    @Override
+    public ArticleSaveDTO update(Long id, ArticleSaveDTO articleDTO) {
+
+        Optional<Article> article = articleRepository.findById(id);
+
+        if(article.isPresent()) {
+            Article art = article.get();
+
+            if(art.getContent().length() < 5 || art.getContent().length() > 10 )
+                throw new WrongThreadException("Content has to be between 5 and 10 characters");
+
+            articleMapper.updateArticleFromDTO(art, articleDTO);
+            return articleMapper.toDTO(articleRepository.save(art));
+        }
+        throw new IllegalArgumentException("Article not found with id: "+id);
+    }
+
+/*    @Override
+    public ArticleSaveDTO update(Long id, ArticleSaveDTO articleDTO) {
+
+        Optional<Article> article = articleRepository.findById(id);
+
+        if(article.isPresent()) {
+            Article art = article.get();
+
+            if(art.getContent().length() < 5 || art.getContent().length() > 10 )
+                throw new WrongThreadException("Content has to be between 5 and 10 characters");
+
+            art.setTitle(articleDTO.getTitle());
+            art.setContent(articleDTO.getContent());
+            art.setAuthor(articleDTO.getAuthor());
+            return articleMapper.toDTO(articleRepository.save(art));
+        }
+        throw new IllegalArgumentException("Article not found with id: "+id);
+    }*/
 
 /*    @Override
     public ArticleSaveDTO save(ArticleSaveDTO article) {
