@@ -6,6 +6,9 @@ import com.blog.model.Article;
 import com.blog.repository.ArticleRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -102,6 +105,19 @@ public class ArticleServiceImpl implements ArticleService {
         List<Article> articles = articleRepository.findAll();
         return articles.stream().map(articleMapper::toDTO).toList();
     }
+
+    @Override
+    public Page<ArticleSaveDTO> findAllPagination(Pageable pageable) {
+        return articleRepository.findAll(pageable).map(articleMapper::toDTO);
+    }
+
+
+/*    @Override
+    public Page<ArticleSaveDTO> findAllPagination(int page, int size) {
+        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        List<ArticleSaveDTO> articleSaveDTOS = findAll();
+        return new PageImpl<>(articleSaveDTOS, pageable, articleSaveDTOS.size());
+    }*/
 
 /*    @Override
     public ArticleSaveDTO update(Long id, ArticleSaveDTO articleDTO) {

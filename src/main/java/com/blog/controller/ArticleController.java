@@ -4,6 +4,10 @@ import com.blog.dto.ArticleSaveDTO;
 import com.blog.model.Article;
 import com.blog.service.ArticleService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -78,6 +82,23 @@ public class ArticleController {
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(articles);
         }
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<ArticleSaveDTO>> findAllPagination(
+            @RequestParam (defaultValue = "0") Integer page,
+            @RequestParam (defaultValue = "3") Integer size,
+            @RequestParam (defaultValue = "id") String sortBy,
+            @RequestParam (defaultValue = "asc") String direction
+    ){
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(direction), sortBy));
+        Page<ArticleSaveDTO> articles = articleService.findAllPagination(pageable);
+        if(articles.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(articles);
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(articles);
+        }
+
     }
 
 
