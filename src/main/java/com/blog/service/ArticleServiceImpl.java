@@ -4,6 +4,7 @@ import com.blog.converter.ArticleMapper;
 import com.blog.dto.ArticleSaveDTO;
 import com.blog.model.Article;
 import com.blog.repository.ArticleRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,25 @@ public class ArticleServiceImpl implements ArticleService {
 
     }
 
+    @Transactional
     @Override
+    public ArticleSaveDTO update(Long id, ArticleSaveDTO articleDTO) {
+
+        Optional<Article> article = articleRepository.findById(id);
+
+        if(article.isPresent()) {
+            Article art = article.get();
+
+            if(art.getContent().length() < 5 || art.getContent().length() > 10 )
+                throw new WrongThreadException("Content has to be between 5 and 10 characters");
+
+            articleMapper.updateArticleFromDTO(art, articleDTO);
+            return articleMapper.toDTO(art);
+        }
+        throw new IllegalArgumentException("Article not found with id: "+id);
+    }
+
+/*    @Override
     public ArticleSaveDTO update(Long id, ArticleSaveDTO articleDTO) {
 
         Optional<Article> article = articleRepository.findById(id);
@@ -48,7 +67,7 @@ public class ArticleServiceImpl implements ArticleService {
             return articleMapper.toDTO(articleRepository.save(art));
         }
         throw new IllegalArgumentException("Article not found with id: "+id);
-    }
+    }*/
 
     @Override
     public String active(Long id, Boolean active) {
