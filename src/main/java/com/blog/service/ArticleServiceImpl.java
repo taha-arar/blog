@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -94,6 +95,12 @@ public class ArticleServiceImpl implements ArticleService {
             return article.get();
         }
         throw new IllegalArgumentException("Article not found with id: "+id);*/
+    }
+
+    @Override
+    public List<ArticleSaveDTO> findAll() {
+        List<Article> articles = articleRepository.findAll();
+        return articles.stream().map(articleMapper::toDTO).toList();
     }
 
 /*    @Override

@@ -29,4 +29,6 @@ public interface ArticleService {
     String active(Long id, Boolean active);
 
     Article findById(Long id);
+
+    List<ArticleSaveDTO> findAll();
 }

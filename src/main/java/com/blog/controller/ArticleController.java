@@ -70,6 +70,16 @@ public class ArticleController {
         }
     }
 
+    @GetMapping
+    public ResponseEntity<List<ArticleSaveDTO>> findAll() {
+        List<ArticleSaveDTO> articles = articleService.findAll();
+        if(articles.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(articles);
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(articles);
+        }
+    }
+
 
 /*    @PostMapping
     public ResponseEntity<Object> save(@RequestBody ArticleSaveDTO article){
