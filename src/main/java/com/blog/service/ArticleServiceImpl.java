@@ -111,6 +111,11 @@ public class ArticleServiceImpl implements ArticleService {
         return articleRepository.findAll(pageable).map(articleMapper::toDTO);
     }
 
+    @Override
+    public Page<ArticleSaveDTO> findAllPaginationWithSearch(String criteria, Pageable pageable) {
+        return articleRepository.findAllWithSearch(criteria, pageable).map(articleMapper::toDTO);
+    }
+
 /*    @Override
     public Page<ArticleSaveDTO> findAllPaginationWithSearch(String criteria, Pageable pageable) {
         List<Article> articles = articleRepository.findAll();
