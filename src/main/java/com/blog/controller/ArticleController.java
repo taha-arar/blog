@@ -101,7 +101,7 @@ public class ArticleController {
 
     }
 
-    @GetMapping("/page-search")
+/*    @GetMapping("/page-search")
     public ResponseEntity<Page<ArticleSaveDTO>> findAllPaginationWithSearch(
             @RequestParam (defaultValue = "0") Integer page,
             @RequestParam (defaultValue = "3") Integer size,
@@ -117,7 +117,7 @@ public class ArticleController {
             return ResponseEntity.status(HttpStatus.OK).body(articles);
         }
 
-    }
+    }*/
 
 
 /*    @PostMapping

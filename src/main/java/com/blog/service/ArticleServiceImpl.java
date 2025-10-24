@@ -111,7 +111,7 @@ public class ArticleServiceImpl implements ArticleService {
         return articleRepository.findAll(pageable).map(articleMapper::toDTO);
     }
 
-    @Override
+/*    @Override
     public Page<ArticleSaveDTO> findAllPaginationWithSearch(String criteria, Pageable pageable) {
         List<Article> articles = articleRepository.findAll();
 
@@ -131,7 +131,7 @@ public class ArticleServiceImpl implements ArticleService {
                 .toList();
 
         return new PageImpl<>(articleSaveDTOS, pageable, articleSaveDTOS.size());
-    }
+    }*/
 
 
 /*    @Override
