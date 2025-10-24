@@ -101,6 +101,24 @@ public class ArticleController {
 
     }
 
+    @GetMapping("/page-search")
+    public ResponseEntity<Page<ArticleSaveDTO>> findAllPaginationWithSearch(
+            @RequestParam (defaultValue = "0") Integer page,
+            @RequestParam (defaultValue = "3") Integer size,
+            @RequestParam (defaultValue = "id") String sortBy,
+            @RequestParam (defaultValue = "asc") String direction,
+            @RequestParam (required = false) String criteria
+    ){
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(direction), sortBy));
+        Page<ArticleSaveDTO> articles = articleService.findAllPaginationWithSearch(criteria, pageable);
+        if(articles.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(articles);
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(articles);
+        }
+
+    }
+
 
 /*    @PostMapping
     public ResponseEntity<Object> save(@RequestBody ArticleSaveDTO article){

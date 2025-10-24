@@ -111,6 +111,28 @@ public class ArticleServiceImpl implements ArticleService {
         return articleRepository.findAll(pageable).map(articleMapper::toDTO);
     }
 
+    @Override
+    public Page<ArticleSaveDTO> findAllPaginationWithSearch(String criteria, Pageable pageable) {
+        List<Article> articles = articleRepository.findAll();
+
+        if(criteria == null) return findAllPagination(pageable);
+
+        List<ArticleSaveDTO> articleSaveDTOS = articles.stream().filter(article -> {
+
+             if(criteria.matches("\\d+")) {
+                 return article.getId() != null && article.getId().equals(Long.parseLong(criteria));
+             }
+
+             return (article.getTitle() != null && article.getTitle().toLowerCase().contains(criteria.toLowerCase()) ||
+                     article.getContent() != null && article.getContent().toLowerCase().contains(criteria.toLowerCase()) ||
+                     article.getAuthor() != null && article.getAuthor().toLowerCase().contains(criteria.toLowerCase()));
+         })
+                .map(articleMapper::toDTO)
+                .toList();
+
+        return new PageImpl<>(articleSaveDTOS, pageable, articleSaveDTOS.size());
+    }
+
 
 /*    @Override
     public Page<ArticleSaveDTO> findAllPagination(int page, int size) {

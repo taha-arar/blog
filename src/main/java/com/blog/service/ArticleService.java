@@ -35,4 +35,6 @@ public interface ArticleService {
     List<ArticleSaveDTO> findAll();
 
     Page<ArticleSaveDTO> findAllPagination(Pageable pageable);
+
+    Page<ArticleSaveDTO> findAllPaginationWithSearch(String criteria, Pageable pageable);
 }
