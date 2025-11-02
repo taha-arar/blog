@@ -1,8 +1,7 @@
 package com.blog.model;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -27,8 +26,13 @@ public class Article extends AbstractEntity<Long>{
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @NotBlank(message = "L'auteur ne peut pas être vide")
-    private String author;
+/*    @NotBlank(message = "L'auteur ne peut pas être vide")
+    private String author;*/
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    @NotNull(message = "L'auteur doit être spécifie")
+    private Author author;
 
     @NotNull(message = "Le statut doit être spécifier")
     private Boolean isActive = true;
