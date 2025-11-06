@@ -21,4 +21,11 @@ public class AuthorServiceImpl implements AuthorService {
         System.out.println("From Service: "+authorMapper.toEntity(author).toString());
         return authorRepository.save(authorMapper.toEntity(author)).getId();
     }
+
+    @Override
+    public void delete(Long id) {
+        if(!authorRepository.existsById(id))
+            throw new IllegalArgumentException("Author not found with id: "+id);
+        authorRepository.deleteById(id);
+    }
 }
