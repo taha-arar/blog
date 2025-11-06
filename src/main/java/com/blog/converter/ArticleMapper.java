@@ -9,7 +9,9 @@ public interface ArticleMapper {
 
     Article toEntity(ArticleSaveDTO article);
 
-    @Mapping(target = "authorId", source = "author.id")
+//    @Mapping(target = "authorId", source = "author.id")
+    @Mapping(target = "authorId", expression = "java(article.getAuthor() != null ? article.getAuthor().getId() : null)")
+    @Mapping(target = "authorFullName", expression = "java(article.getAuthor() != null ? article.getAuthor().getFirstName() + \" \" + article.getAuthor().getLastName() : null)")
     ArticleSaveDTO toDTO(Article article);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

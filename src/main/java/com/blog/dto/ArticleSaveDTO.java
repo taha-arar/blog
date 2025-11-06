@@ -18,5 +18,6 @@ public class ArticleSaveDTO {
     private String content;
     @NotNull(message = "Author is required")
     private Long authorId;
+    private String authorFullName;
 
 }
