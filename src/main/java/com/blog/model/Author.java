@@ -42,4 +42,7 @@ public class Author extends AbstractEntity<Long>{
 
     @OneToMany(mappedBy = "author")
     private List<Article> articles;
+
+    @Column(nullable = false)
+    private Boolean isActive = true;
 }

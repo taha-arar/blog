@@ -11,8 +11,10 @@ public interface AuthorMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "isActive", source = "active", defaultValue = "true")
     Author toEntity(AuthorSaveDTO author);
 
+    @Mapping(target = "active", source = "isActive")
     AuthorSaveDTO toDTO(Author author);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -20,6 +22,7 @@ public interface AuthorMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "isActive", source = "active")
     void updateAuthorFromDTO(@MappingTarget Author author, AuthorSaveDTO authorDTO);
 
 }

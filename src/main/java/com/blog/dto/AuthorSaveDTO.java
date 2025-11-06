@@ -29,4 +29,6 @@ public class AuthorSaveDTO {
 
     @Column(nullable = false)
     private Domain domain;
+
+    private Boolean active;
 }
