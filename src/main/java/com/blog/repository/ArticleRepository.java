@@ -19,6 +19,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
             "(:criteria IS NULL OR :criteria = ''" +
             "OR art.title LIKE %:criteria% " +
             "OR art.content LIKE %:criteria% " +
+            "OR art.author.firstName LIKE %:criteria% " +
+            "OR art.author.lastName LIKE %:criteria% " +
             "or CAST(art.id AS string) = :criteria)")
     Page<Article> findAllWithSearch(@Param("criteria") String criteria, Pageable pageable);
 
