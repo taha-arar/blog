@@ -1,9 +1,8 @@
 package com.blog.controller;
 
 import com.blog.dto.ArticleSaveDTO;
-import com.blog.model.Article;
+import com.blog.dto.AuthorAssignmentRequest;
 import com.blog.service.ArticleService;
-import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/articles")
@@ -62,10 +60,22 @@ public class ArticleController {
         }
     }
 
+    @PatchMapping("/{id}/author")
+    public ResponseEntity<Object> assignAuthor(@PathVariable Long id, @RequestBody AuthorAssignmentRequest request){
+        try {
+            ArticleSaveDTO updated = articleService.assignAuthor(id, request.getAuthorId());
+            return ResponseEntity.status(HttpStatus.OK).body(updated);
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Object> findById(@PathVariable("id") Long id) {
         try {
-            Article article = articleService.findById(id);
+            ArticleSaveDTO article = articleService.findById(id);
             return ResponseEntity.status(HttpStatus.OK).body(article);
         } catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -122,7 +132,7 @@ public class ArticleController {
     @PatchMapping("/{articleId}/author/{authorId}")
     public ResponseEntity<Object> assigneAuthor(@PathVariable Long articleId, @PathVariable Long authorId){
         try {
-            ArticleSaveDTO updatedArticle = articleService.assigneAuthor(articleId, authorId);
+            ArticleSaveDTO updatedArticle = articleService.assignAuthor(articleId, authorId);
             return ResponseEntity.status(HttpStatus.OK).body(updatedArticle);
         } catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

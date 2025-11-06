@@ -9,7 +9,6 @@ import com.blog.repository.AuthorRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -110,10 +109,10 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Article findById(Long id) {
-
-        return articleRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Article not found with id: "+id));
+    public ArticleSaveDTO findById(Long id) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Article not found with id: " + id));
+        return articleMapper.toDTO(article);
 
 
 /*        Optional<Article> article = articleRepository.findById(id);
@@ -140,14 +139,16 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public ArticleSaveDTO assigneAuthor(Long articleId, Long authorId) {
-        Article article = findById(articleId);
+    public ArticleSaveDTO assignAuthor(Long articleId, Long authorId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("Article not found with id: " + articleId));
 
         Author author = authorRepository.findById(authorId)
                 .orElseThrow(() -> new IllegalArgumentException("Author not found"));
 
-        if(authorId.equals(article.getAuthor().getId()))
+        if (article.getAuthor() != null && authorId.equals(article.getAuthor().getId())) {
             throw new IllegalArgumentException("Author is already assigned to this article");
+        }
 
         article.setAuthor(author);
         return articleMapper.toDTO(articleRepository.save(article));

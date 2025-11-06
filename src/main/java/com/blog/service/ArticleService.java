@@ -1,12 +1,10 @@
 package com.blog.service;
 
 import com.blog.dto.ArticleSaveDTO;
-import com.blog.model.Article;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ArticleService {
 
@@ -30,17 +28,17 @@ public interface ArticleService {
 
     String active(Long id, Boolean active);
 
-    Article findById(Long id);
+    ArticleSaveDTO findById(Long id);
 
     List<ArticleSaveDTO> findAll();
 
     Page<ArticleSaveDTO> findAllPagination(Pageable pageable);
+
+    ArticleSaveDTO assignAuthor(Long articleId, Long authorId);
 
 /*
     Page<ArticleSaveDTO> findAllPaginationWithSearch(String criteria, Pageable pageable);
 */
 
     Page<ArticleSaveDTO> findAllPaginationWithSearch(String criteria, Pageable pageable);
-
-    ArticleSaveDTO assigneAuthor(Long articleId, Long authorId);
 }

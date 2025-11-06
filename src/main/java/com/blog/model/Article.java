@@ -36,7 +36,6 @@ public class Article extends AbstractEntity<Long>{
     @OnDelete(action = OnDeleteAction.SET_NULL)
     private Author author;
 
-    @NotNull(message = "Le statut doit être spécifier")
     private Boolean isActive = true;
 
 }
