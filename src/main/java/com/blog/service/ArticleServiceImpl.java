@@ -3,7 +3,9 @@ package com.blog.service;
 import com.blog.converter.ArticleMapper;
 import com.blog.dto.ArticleSaveDTO;
 import com.blog.model.Article;
+import com.blog.model.Author;
 import com.blog.repository.ArticleRepository;
+import com.blog.repository.AuthorRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,9 +23,10 @@ public class ArticleServiceImpl implements ArticleService {
 
     private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
+    private final AuthorRepository authorRepository;
 
 
-        @Override
+/*    @Override
     public Long save(ArticleSaveDTO article) {
         if(articleRepository.existsByTitle(article.getTitle()))
             throw new IllegalArgumentException("Article: "+article.getTitle()+" already exists");
@@ -35,6 +38,26 @@ public class ArticleServiceImpl implements ArticleService {
                 articleRepository.save(
                         articleMapper.toEntity(
                                 article)).getId();
+
+    }*/
+
+    @Override
+    public Long save(ArticleSaveDTO article) {
+        if(articleRepository.existsByTitle(article.getTitle()))
+            throw new IllegalArgumentException("Article: "+article.getTitle()+" already exists");
+
+        if(article.getContent().length() < 5 || article.getContent().length() > 10 )
+            throw new IllegalArgumentException("Content has to be between 5 and 10 characters");
+
+        if(article.getAuthorId() == null)
+            throw new IllegalArgumentException("Author is required");
+
+        Author author = authorRepository.findById(article.getAuthorId())
+                .orElseThrow(() -> new IllegalArgumentException("Author not found"));
+
+        Article savedArticle = articleMapper.toEntity(article);
+        savedArticle.setAuthor(author);
+        return articleRepository.save(savedArticle).getId();
 
     }
 
