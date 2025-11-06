@@ -41,4 +41,6 @@ public interface ArticleService {
 */
 
     Page<ArticleSaveDTO> findAllPaginationWithSearch(String criteria, Pageable pageable);
+
+    ArticleSaveDTO assigneAuthor(Long articleId, Long authorId);
 }

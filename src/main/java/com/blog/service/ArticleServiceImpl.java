@@ -139,6 +139,21 @@ public class ArticleServiceImpl implements ArticleService {
         return articleRepository.findAllWithSearch(criteria, pageable).map(articleMapper::toDTO);
     }
 
+    @Override
+    public ArticleSaveDTO assigneAuthor(Long articleId, Long authorId) {
+        Article article = findById(articleId);
+
+        Author author = authorRepository.findById(authorId)
+                .orElseThrow(() -> new IllegalArgumentException("Author not found"));
+
+        if(authorId.equals(article.getAuthor().getId()))
+            throw new IllegalArgumentException("Author is already assigned to this article");
+
+        article.setAuthor(author);
+        return articleMapper.toDTO(articleRepository.save(article));
+
+    }
+
 /*    @Override
     public Page<ArticleSaveDTO> findAllPaginationWithSearch(String criteria, Pageable pageable) {
         List<Article> articles = articleRepository.findAll();

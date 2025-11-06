@@ -119,6 +119,19 @@ public class ArticleController {
 
     }
 
+    @PatchMapping("/{articleId}/author/{authorId}")
+    public ResponseEntity<Object> assigneAuthor(@PathVariable Long articleId, @PathVariable Long authorId){
+        try {
+            ArticleSaveDTO updatedArticle = articleService.assigneAuthor(articleId, authorId);
+            return ResponseEntity.status(HttpStatus.OK).body(updatedArticle);
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e){
+            return ResponseEntity.status(500).body("Internal Server Error");
+        }
+
+    }
+
 /*    @GetMapping("/page-search")
     public ResponseEntity<Page<ArticleSaveDTO>> findAllPaginationWithSearch(
             @RequestParam (defaultValue = "0") Integer page,

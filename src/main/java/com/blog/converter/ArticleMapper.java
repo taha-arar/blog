@@ -9,6 +9,7 @@ public interface ArticleMapper {
 
     Article toEntity(ArticleSaveDTO article);
 
+    @Mapping(target = "authorId", source = "author.id")
     ArticleSaveDTO toDTO(Article article);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
