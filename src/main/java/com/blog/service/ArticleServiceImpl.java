@@ -70,7 +70,7 @@ public class ArticleServiceImpl implements ArticleService {
         if(article.isPresent()) {
             Article art = article.get();
 
-            if(art.getContent().length() < 5 || art.getContent().length() > 10 )
+            if(articleDTO.getContent().length() < 5 || articleDTO.getContent().length() > 10 )
                 throw new WrongThreadException("Content has to be between 5 and 10 characters");
 
             articleMapper.updateArticleFromDTO(art, articleDTO);
