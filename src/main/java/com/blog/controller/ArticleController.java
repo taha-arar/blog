@@ -2,6 +2,9 @@ package com.blog.controller;
 
 import com.blog.dto.ArticleSaveDTO;
 import com.blog.dto.AuthorAssignmentRequest;
+import com.blog.exception.ArticleContentLengthException;
+import com.blog.exception.ArticleDuplicatedTitleException;
+import com.blog.exception.AuthorNotFoundException;
 import com.blog.service.ArticleService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,14 +26,10 @@ public class ArticleController {
         this.articleService = articleService;
     }
 
+
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody ArticleSaveDTO article){
-        try {
-            Long savedArticle = articleService.save(article);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedArticle);
-        } catch (RuntimeException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public ResponseEntity<Object> save(@RequestBody ArticleSaveDTO article) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(articleService.save(article));
     }
 
     @PutMapping("/{id}")

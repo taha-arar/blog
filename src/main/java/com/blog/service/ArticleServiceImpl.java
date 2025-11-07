@@ -2,6 +2,10 @@ package com.blog.service;
 
 import com.blog.converter.ArticleMapper;
 import com.blog.dto.ArticleSaveDTO;
+import com.blog.exception.ArticleContentLengthException;
+import com.blog.exception.ArticleDuplicatedTitleException;
+import com.blog.exception.ArticleRequiredAuthorException;
+import com.blog.exception.AuthorNotFoundException;
 import com.blog.model.Article;
 import com.blog.model.Author;
 import com.blog.repository.ArticleRepository;
@@ -43,16 +47,16 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public Long save(ArticleSaveDTO article) {
         if(articleRepository.existsByTitle(article.getTitle()))
-            throw new IllegalArgumentException("Article: "+article.getTitle()+" already exists");
+            throw new ArticleDuplicatedTitleException(article.getTitle());
 
         if(article.getContent().length() < 5 || article.getContent().length() > 10 )
-            throw new IllegalArgumentException("Content has to be between 5 and 10 characters");
+            throw new ArticleContentLengthException();
 
         if(article.getAuthorId() == null)
-            throw new IllegalArgumentException("Author is required");
+            throw new ArticleRequiredAuthorException();
 
         Author author = authorRepository.findById(article.getAuthorId())
-                .orElseThrow(() -> new IllegalArgumentException("Author not found"));
+                .orElseThrow(() -> new AuthorNotFoundException(article.getAuthorId()));
 
         Article savedArticle = articleMapper.toEntity(article);
         savedArticle.setAuthor(author);
