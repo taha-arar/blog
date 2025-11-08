@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/v1/articles")
+@Slf4j
 public class ArticleController {
 
     private final ArticleService articleService;
@@ -26,39 +29,49 @@ public class ArticleController {
 
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody ArticleSaveDTO article) {
+        log.info("Received request to create article with title {}", article.getTitle());
         return ResponseEntity.status(HttpStatus.CREATED).body(articleService.save(article));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ArticleSaveDTO> update(@PathVariable Long id, @RequestBody ArticleSaveDTO article){
+        log.info("Received request to update article {} with payload", id);
         ArticleSaveDTO updated = articleService.update(id, article);
+        log.info("Article {} updated successfully", id);
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 
     @PatchMapping("/active/{id}")
     public ResponseEntity<String> active(@PathVariable Long id, @RequestParam Boolean active){
-//      return ResponseEntity.status(HttpStatus.OK).body(articleService.active(id, active));
+        log.info("Received request to change active flag for article {} to {}", id, active);
         return ResponseEntity.ok(articleService.active(id, active));
     }
 
     @PatchMapping("/{id}/author")
     public ResponseEntity<ArticleSaveDTO> assignAuthor(@PathVariable Long id, @RequestBody AuthorAssignmentRequest request){
+        log.info("Received request to assign author {} to article {}", request.getAuthorId(), id);
         ArticleSaveDTO updated = articleService.assignAuthor(id, request.getAuthorId());
+        log.info("Author {} assigned to article {}", request.getAuthorId(), id);
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ArticleSaveDTO> findById(@PathVariable("id") Long id) {
+        log.info("Received request to fetch article {}", id);
         ArticleSaveDTO article = articleService.findById(id);
+        log.info("Article {} retrieved successfully", id);
         return ResponseEntity.status(HttpStatus.OK).body(article);
     }
 
     @GetMapping
     public ResponseEntity<List<ArticleSaveDTO>> findAll() {
+        log.info("Received request to list all articles");
         List<ArticleSaveDTO> articles = articleService.findAll();
         if(articles.isEmpty()){
+            log.info("No articles found");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(articles);
         } else {
+            log.info("Returning {} articles", articles.size());
             return ResponseEntity.status(HttpStatus.OK).body(articles);
         }
     }
@@ -70,11 +83,14 @@ public class ArticleController {
             @RequestParam (defaultValue = "id") String sortBy,
             @RequestParam (defaultValue = "asc") String direction
     ){
+        log.info("Received request for paginated articles page={} size={} sortBy={} direction={}", page, size, sortBy, direction);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(direction), sortBy));
         Page<ArticleSaveDTO> articles = articleService.findAllPagination(pageable);
         if(articles.isEmpty()){
+            log.info("Paginated articles result is empty");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(articles);
         } else {
+            log.info("Returning {} articles for requested page", articles.getNumberOfElements());
             return ResponseEntity.status(HttpStatus.OK).body(articles);
         }
 
@@ -88,11 +104,14 @@ public class ArticleController {
             @RequestParam (defaultValue = "asc") String direction,
             @RequestParam (required = false) String criteria
     ){
+        log.info("Received request for paginated articles with search page={} size={} sortBy={} direction={} criteria={}", page, size, sortBy, direction, criteria);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(direction), sortBy));
         Page<ArticleSaveDTO> articles = articleService.findAllPaginationWithSearch(criteria, pageable);
         if(articles.isEmpty()){
+            log.info("Paginated search result is empty");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(articles);
         } else {
+            log.info("Returning {} articles for requested search page", articles.getNumberOfElements());
             return ResponseEntity.status(HttpStatus.OK).body(articles);
         }
 
@@ -100,7 +119,9 @@ public class ArticleController {
 
     @PatchMapping("/{articleId}/author/{authorId}")
     public ResponseEntity<ArticleSaveDTO> assigneAuthor(@PathVariable Long articleId, @PathVariable Long authorId){
+        log.info("Received request to assign author {} to article {}", authorId, articleId);
         ArticleSaveDTO updatedArticle = articleService.assignAuthor(articleId, authorId);
+        log.info("Author {} assigned to article {}", authorId, articleId);
         return ResponseEntity.status(HttpStatus.OK).body(updatedArticle);
     }
 

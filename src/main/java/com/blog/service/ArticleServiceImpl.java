@@ -9,6 +9,7 @@ import com.blog.repository.ArticleRepository;
 import com.blog.repository.AuthorRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ArticleServiceImpl implements ArticleService {
 
     private final ArticleRepository articleRepository;
@@ -43,21 +45,30 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Long save(ArticleSaveDTO article) {
-        if(articleRepository.existsByTitle(article.getTitle()))
+        log.info("Attempting to save article with title {}", article.getTitle());
+        if(articleRepository.existsByTitle(article.getTitle())) {
+            log.warn("Article with title {} already exists", article.getTitle());
             throw new ArticleDuplicatedTitleException(article.getTitle());
+        }
 
-        if(article.getContent().length() < 5 || article.getContent().length() > 10 )
+        if(article.getContent().length() < 5 || article.getContent().length() > 10 ) {
+            log.warn("Article content length invalid for title {}", article.getTitle());
             throw new ArticleContentLengthException();
+        }
 
-        if(article.getAuthorId() == null)
+        if(article.getAuthorId() == null) {
+            log.warn("Author is required when saving article {}", article.getTitle());
             throw new ArticleRequiredAuthorException();
+        }
 
         Author author = authorRepository.findById(article.getAuthorId())
                 .orElseThrow(() -> new AuthorNotFoundException(article.getAuthorId()));
 
         Article savedArticle = articleMapper.toEntity(article);
         savedArticle.setAuthor(author);
-        return articleRepository.save(savedArticle).getId();
+        Long id = articleRepository.save(savedArticle).getId();
+        log.info("Article {} saved successfully with id {}", article.getTitle(), id);
+        return id;
 
     }
 
@@ -65,17 +76,22 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ArticleSaveDTO update(Long id, ArticleSaveDTO articleDTO) {
 
+        log.info("Attempting to update article {}", id);
         Optional<Article> article = articleRepository.findById(id);
 
         if(article.isPresent()) {
             Article art = article.get();
 
-            if(articleDTO.getContent().length() < 5 || articleDTO.getContent().length() > 10 )
+            if(articleDTO.getContent().length() < 5 || articleDTO.getContent().length() > 10 ) {
+                log.warn("Article content length invalid for update on article {}", id);
                 throw new ArticleContentLengthException();
+            }
 
             articleMapper.updateArticleFromDTO(art, articleDTO);
+            log.info("Article {} updated successfully", id);
             return articleMapper.toDTO(art);
         }
+        log.warn("Article {} not found for update", id);
         throw new ArticleNotFoundException(id);
     }
 
@@ -98,22 +114,29 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public String active(Long id, Boolean active) {
+        log.info("Updating active state for article {} to {}", id, active);
         Optional<Article> article = articleRepository.findById(id);
         if(article.isPresent()) {
             Article art = article.get();
-            if(art.getIsActive().equals(active))
+            if(art.getIsActive().equals(active)) {
+                log.warn("Active state for article {} already {}", id, active);
                 throw new ArticleStateAlreadySetException(id, active);
+            }
             art.setIsActive(active);
             articleRepository.save(art);
+            log.info("Active state for article {} updated to {}", id, active);
             return "Article " + (active ? "activated" : "deactivated") + " successfully.";
         }
+        log.warn("Article {} not found when updating active state", id);
         throw new ArticleNotFoundException(id);
     }
 
     @Override
     public ArticleSaveDTO findById(Long id) {
+        log.info("Fetching article {}", id);
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new ArticleNotFoundException(id));
+        log.info("Article {} fetched successfully", id);
         return articleMapper.toDTO(article);
 
 
@@ -126,22 +149,27 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<ArticleSaveDTO> findAll() {
+        log.info("Fetching all articles");
         List<Article> articles = articleRepository.findAll();
+        log.info("Retrieved {} articles", articles.size());
         return articles.stream().map(articleMapper::toDTO).toList();
     }
 
     @Override
     public Page<ArticleSaveDTO> findAllPagination(Pageable pageable) {
+        log.info("Fetching paginated articles page={} size={}", pageable.getPageNumber(), pageable.getPageSize());
         return articleRepository.findAll(pageable).map(articleMapper::toDTO);
     }
 
     @Override
     public Page<ArticleSaveDTO> findAllPaginationWithSearch(String criteria, Pageable pageable) {
+        log.info("Fetching paginated articles with search criteria={} page={} size={}", criteria, pageable.getPageNumber(), pageable.getPageSize());
         return articleRepository.findAllWithSearch(criteria, pageable).map(articleMapper::toDTO);
     }
 
     @Override
     public ArticleSaveDTO assignAuthor(Long articleId, Long authorId) {
+        log.info("Assigning author {} to article {}", authorId, articleId);
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new ArticleNotFoundException(articleId));
 
@@ -149,11 +177,14 @@ public class ArticleServiceImpl implements ArticleService {
                 .orElseThrow(() -> new AuthorNotFoundException(authorId));
 
         if (article.getAuthor() != null && authorId.equals(article.getAuthor().getId())) {
+            log.warn("Author {} already assigned to article {}", authorId, articleId);
             throw new ArticleAuthorAlreadyAssignedException(articleId, authorId);
         }
 
         article.setAuthor(author);
-        return articleMapper.toDTO(articleRepository.save(article));
+        ArticleSaveDTO dto = articleMapper.toDTO(articleRepository.save(article));
+        log.info("Author {} assigned to article {}", authorId, articleId);
+        return dto;
 
     }
 
