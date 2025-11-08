@@ -49,14 +49,8 @@ public class ArticleController {
 
     @PatchMapping("/active/{id}")
     public ResponseEntity<String> active(@PathVariable Long id, @RequestParam Boolean active){
-        try {
-            String response = articleService.active(id, active);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e){
-            return ResponseEntity.status(500).body("Internal Server Error");
-        }
+//      return ResponseEntity.status(HttpStatus.OK).body(articleService.active(id, active));
+        return ResponseEntity.ok(articleService.active(id, active));
     }
 
     @PatchMapping("/{id}/author")

@@ -2,10 +2,7 @@ package com.blog.service;
 
 import com.blog.converter.ArticleMapper;
 import com.blog.dto.ArticleSaveDTO;
-import com.blog.exception.ArticleContentLengthException;
-import com.blog.exception.ArticleDuplicatedTitleException;
-import com.blog.exception.ArticleRequiredAuthorException;
-import com.blog.exception.AuthorNotFoundException;
+import com.blog.exception.*;
 import com.blog.model.Article;
 import com.blog.model.Author;
 import com.blog.repository.ArticleRepository;
@@ -104,12 +101,13 @@ public class ArticleServiceImpl implements ArticleService {
         Optional<Article> article = articleRepository.findById(id);
         if(article.isPresent()) {
             Article art = article.get();
-            if(art.getIsActive().equals(active)) return "Article already " + (active ? "active" : "deactivated");
+            if(art.getIsActive().equals(active))
+                throw new ArticleStateAlreadySetException(id, active);
             art.setIsActive(active);
             articleRepository.save(art);
             return "Article " + (active ? "activated" : "deactivated") + " successfully.";
         }
-        throw new IllegalArgumentException("Article not found with id: "+id);
+        throw new ArticleNotFoundException(id);
     }
 
     @Override
