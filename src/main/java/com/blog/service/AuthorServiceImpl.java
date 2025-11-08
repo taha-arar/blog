@@ -2,9 +2,10 @@ package com.blog.service;
 
 import com.blog.converter.AuthorMapper;
 import com.blog.dto.AuthorSaveDTO;
-import com.blog.model.Article;
+import com.blog.exception.AuthorActiveFlagRequiredException;
+import com.blog.exception.AuthorDuplicateEmailException;
+import com.blog.exception.AuthorNotFoundException;
 import com.blog.model.Author;
-import com.blog.repository.ArticleRepository;
 import com.blog.repository.AuthorRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -20,13 +21,12 @@ public class AuthorServiceImpl implements AuthorService {
 
     private final AuthorRepository authorRepository;
     private final AuthorMapper authorMapper;
-    private final ArticleRepository articleRepository;
 
 
     @Override
     public Long save(AuthorSaveDTO author) {
         if(authorRepository.existsByEmail(author.getEmail()))
-            throw new IllegalArgumentException("Author with Email: "+author.getEmail()+" already exists");
+            throw new AuthorDuplicateEmailException(author.getEmail());
         Author toBeSaved = authorMapper.toEntity(author);
         if (toBeSaved.getIsActive() == null) {
             toBeSaved.setIsActive(true);
@@ -37,7 +37,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public void delete(Long id) {
         if(!authorRepository.existsById(id))
-            throw new IllegalArgumentException("Author not found with id: "+id);
+            throw new AuthorNotFoundException(id);
         authorRepository.deleteById(id);
     }
 
@@ -45,11 +45,11 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public AuthorSaveDTO update(Long id, AuthorSaveDTO authorDTO) {
         Author author = authorRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Author not found with id: " + id));
+                .orElseThrow(() -> new AuthorNotFoundException(id));
 
         if (authorDTO.getEmail() != null && !authorDTO.getEmail().equalsIgnoreCase(author.getEmail())
                 && authorRepository.existsByEmail(authorDTO.getEmail())) {
-            throw new IllegalStateException("Author with Email: " + authorDTO.getEmail() + " already exists");
+            throw new AuthorDuplicateEmailException(authorDTO.getEmail());
         }
 
         authorMapper.updateAuthorFromDTO(author, authorDTO);
@@ -60,25 +60,25 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public String active(Long id, Boolean active) {
         if (active == null) {
-            throw new IllegalStateException("Active flag is required");
+            throw new AuthorActiveFlagRequiredException();
         }
 
         Author author = authorRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Author not found with id: " + id));
+                .orElseThrow(() -> new AuthorNotFoundException(id));
 
-        if (Boolean.valueOf(active).equals(author.getIsActive())) {
-            return "Author already " + (Boolean.TRUE.equals(active) ? "active" : "deactivated");
+        if (active.equals(author.getIsActive())) {
+            return "Author already " + (active ? "active" : "deactivated");
         }
 
-        author.setIsActive(Boolean.TRUE.equals(active));
+        author.setIsActive(active);
         authorRepository.save(author);
-        return "Author " + (Boolean.TRUE.equals(active) ? "activated" : "deactivated") + " successfully.";
+        return "Author " + (active ? "activated" : "deactivated") + " successfully.";
     }
 
     @Override
     public AuthorSaveDTO findById(Long id) {
         Author author = authorRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Author not found with id: " + id));
+                .orElseThrow(() -> new AuthorNotFoundException(id));
         return authorMapper.toDTO(author);
     }
 

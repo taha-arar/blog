@@ -21,67 +21,33 @@ public class AuthorController {
     private final AuthorService authorService;
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody AuthorSaveDTO author){
-        try {
-            Long savedAuthor = authorService.save(author);
-            return ResponseEntity.status(201).body(savedAuthor);
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.status(400).body(e.getMessage());
-        } catch (RuntimeException e){
-            return ResponseEntity.status(500).body(e.getMessage());
-        }
+    public ResponseEntity<Long> save(@RequestBody AuthorSaveDTO author){
+        Long savedAuthor = authorService.save(author);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedAuthor);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable Long id){
-        try {
-            authorService.delete(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.status(404).body(e.getMessage());
-        } catch (RuntimeException e){
-            return ResponseEntity.status(500).body(e.getMessage());
-        }
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        authorService.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody AuthorSaveDTO author) {
-        try {
-            AuthorSaveDTO updated = authorService.update(id, author);
-            return ResponseEntity.status(HttpStatus.OK).body(updated);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
-        }
+    public ResponseEntity<AuthorSaveDTO> update(@PathVariable Long id, @RequestBody AuthorSaveDTO author) {
+        AuthorSaveDTO updated = authorService.update(id, author);
+        return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 
     @PatchMapping("/active/{id}")
-    public ResponseEntity<Object> active(@PathVariable Long id, @RequestParam Boolean active) {
-        try {
-            String response = authorService.active(id, active);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
-        }
+    public ResponseEntity<String> active(@PathVariable Long id, @RequestParam Boolean active) {
+        String response = authorService.active(id, active);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> findById(@PathVariable("id") Long id) {
-        try {
-            AuthorSaveDTO author = authorService.findById(id);
-            return ResponseEntity.status(HttpStatus.OK).body(author);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
-        }
+    public ResponseEntity<AuthorSaveDTO> findById(@PathVariable("id") Long id) {
+        AuthorSaveDTO author = authorService.findById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(author);
     }
 
     @GetMapping

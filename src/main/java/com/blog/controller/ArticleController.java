@@ -2,9 +2,6 @@ package com.blog.controller;
 
 import com.blog.dto.ArticleSaveDTO;
 import com.blog.dto.AuthorAssignmentRequest;
-import com.blog.exception.ArticleContentLengthException;
-import com.blog.exception.ArticleDuplicatedTitleException;
-import com.blog.exception.AuthorNotFoundException;
 import com.blog.service.ArticleService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,18 +30,9 @@ public class ArticleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody ArticleSaveDTO article){
-        try {
-            ArticleSaveDTO updated = articleService.update(id, article);
-            return ResponseEntity.status(HttpStatus.OK).body(updated);
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (WrongThreadException w){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(w.getMessage());
-        } catch (Exception e){
-            return ResponseEntity.status(500).body("Internal Server Error");
-        }
-
+    public ResponseEntity<ArticleSaveDTO> update(@PathVariable Long id, @RequestBody ArticleSaveDTO article){
+        ArticleSaveDTO updated = articleService.update(id, article);
+        return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 
     @PatchMapping("/active/{id}")
@@ -54,27 +42,15 @@ public class ArticleController {
     }
 
     @PatchMapping("/{id}/author")
-    public ResponseEntity<Object> assignAuthor(@PathVariable Long id, @RequestBody AuthorAssignmentRequest request){
-        try {
-            ArticleSaveDTO updated = articleService.assignAuthor(id, request.getAuthorId());
-            return ResponseEntity.status(HttpStatus.OK).body(updated);
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
-        }
+    public ResponseEntity<ArticleSaveDTO> assignAuthor(@PathVariable Long id, @RequestBody AuthorAssignmentRequest request){
+        ArticleSaveDTO updated = articleService.assignAuthor(id, request.getAuthorId());
+        return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> findById(@PathVariable("id") Long id) {
-        try {
-            ArticleSaveDTO article = articleService.findById(id);
-            return ResponseEntity.status(HttpStatus.OK).body(article);
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Error Server.");
-        }
+    public ResponseEntity<ArticleSaveDTO> findById(@PathVariable("id") Long id) {
+        ArticleSaveDTO article = articleService.findById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(article);
     }
 
     @GetMapping
@@ -123,16 +99,9 @@ public class ArticleController {
     }
 
     @PatchMapping("/{articleId}/author/{authorId}")
-    public ResponseEntity<Object> assigneAuthor(@PathVariable Long articleId, @PathVariable Long authorId){
-        try {
-            ArticleSaveDTO updatedArticle = articleService.assignAuthor(articleId, authorId);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedArticle);
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e){
-            return ResponseEntity.status(500).body("Internal Server Error");
-        }
-
+    public ResponseEntity<ArticleSaveDTO> assigneAuthor(@PathVariable Long articleId, @PathVariable Long authorId){
+        ArticleSaveDTO updatedArticle = articleService.assignAuthor(articleId, authorId);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedArticle);
     }
 
 /*    @GetMapping("/page-search")

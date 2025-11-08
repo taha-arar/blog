@@ -71,12 +71,12 @@ public class ArticleServiceImpl implements ArticleService {
             Article art = article.get();
 
             if(articleDTO.getContent().length() < 5 || articleDTO.getContent().length() > 10 )
-                throw new WrongThreadException("Content has to be between 5 and 10 characters");
+                throw new ArticleContentLengthException();
 
             articleMapper.updateArticleFromDTO(art, articleDTO);
             return articleMapper.toDTO(art);
         }
-        throw new IllegalArgumentException("Article not found with id: "+id);
+        throw new ArticleNotFoundException(id);
     }
 
 /*    @Override
@@ -113,7 +113,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ArticleSaveDTO findById(Long id) {
         Article article = articleRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Article not found with id: " + id));
+                .orElseThrow(() -> new ArticleNotFoundException(id));
         return articleMapper.toDTO(article);
 
 
@@ -143,13 +143,13 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ArticleSaveDTO assignAuthor(Long articleId, Long authorId) {
         Article article = articleRepository.findById(articleId)
-                .orElseThrow(() -> new IllegalArgumentException("Article not found with id: " + articleId));
+                .orElseThrow(() -> new ArticleNotFoundException(articleId));
 
         Author author = authorRepository.findById(authorId)
-                .orElseThrow(() -> new IllegalArgumentException("Author not found"));
+                .orElseThrow(() -> new AuthorNotFoundException(authorId));
 
         if (article.getAuthor() != null && authorId.equals(article.getAuthor().getId())) {
-            throw new IllegalArgumentException("Author is already assigned to this article");
+            throw new ArticleAuthorAlreadyAssignedException(articleId, authorId);
         }
 
         article.setAuthor(author);
