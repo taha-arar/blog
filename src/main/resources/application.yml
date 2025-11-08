@@ -20,3 +20,9 @@ spring:
           lob:
             non_contextual_creation: true
     show-sql: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
