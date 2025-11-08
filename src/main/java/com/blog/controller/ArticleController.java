@@ -3,6 +3,13 @@ package com.blog.controller;
 import com.blog.dto.ArticleSaveDTO;
 import com.blog.dto.AuthorAssignmentRequest;
 import com.blog.service.ArticleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,11 +20,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
-
 @RestController
 @RequestMapping("/api/v1/articles")
 @Slf4j
+@Tag(name = "Articles", description = "Operations related to article management")
 public class ArticleController {
 
     private final ArticleService articleService;
@@ -28,12 +34,25 @@ public class ArticleController {
 
 
     @PostMapping
+    @Operation(summary = "Create a new article", description = "Creates an article with the provided data")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Article created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid article data"),
+            @ApiResponse(responseCode = "404", description = "Author not found"),
+            @ApiResponse(responseCode = "409", description = "Article title already exists")
+    })
     public ResponseEntity<Object> save(@RequestBody ArticleSaveDTO article) {
         log.info("Received request to create article with title {}", article.getTitle());
         return ResponseEntity.status(HttpStatus.CREATED).body(articleService.save(article));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update an existing article", description = "Updates an article identified by its ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Article updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid article data"),
+            @ApiResponse(responseCode = "404", description = "Article not found")
+    })
     public ResponseEntity<ArticleSaveDTO> update(@PathVariable Long id, @RequestBody ArticleSaveDTO article){
         log.info("Received request to update article {} with payload", id);
         ArticleSaveDTO updated = articleService.update(id, article);
@@ -42,12 +61,24 @@ public class ArticleController {
     }
 
     @PatchMapping("/active/{id}")
+    @Operation(summary = "Activate or deactivate an article", description = "Update the active flag for an article")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Article status updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Requested state already applied"),
+            @ApiResponse(responseCode = "404", description = "Article not found")
+    })
     public ResponseEntity<String> active(@PathVariable Long id, @RequestParam Boolean active){
         log.info("Received request to change active flag for article {} to {}", id, active);
         return ResponseEntity.ok(articleService.active(id, active));
     }
 
     @PatchMapping("/{id}/author")
+    @Operation(summary = "Assign an author to an article", description = "Associates an author to an existing article")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Author assigned successfully"),
+            @ApiResponse(responseCode = "404", description = "Article or author not found"),
+            @ApiResponse(responseCode = "409", description = "Author already assigned to this article")
+    })
     public ResponseEntity<ArticleSaveDTO> assignAuthor(@PathVariable Long id, @RequestBody AuthorAssignmentRequest request){
         log.info("Received request to assign author {} to article {}", request.getAuthorId(), id);
         ArticleSaveDTO updated = articleService.assignAuthor(id, request.getAuthorId());
@@ -56,6 +87,11 @@ public class ArticleController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Find article by ID", description = "Retrieves an article using its identifier")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Article retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Article not found")
+    })
     public ResponseEntity<ArticleSaveDTO> findById(@PathVariable("id") Long id) {
         log.info("Received request to fetch article {}", id);
         ArticleSaveDTO article = articleService.findById(id);
@@ -64,6 +100,11 @@ public class ArticleController {
     }
 
     @GetMapping
+    @Operation(summary = "List all articles", description = "Retrieves all articles without pagination")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Articles retrieved successfully"),
+            @ApiResponse(responseCode = "204", description = "No articles found")
+    })
     public ResponseEntity<List<ArticleSaveDTO>> findAll() {
         log.info("Received request to list all articles");
         List<ArticleSaveDTO> articles = articleService.findAll();
@@ -77,10 +118,19 @@ public class ArticleController {
     }
 
     @GetMapping("/page")
+    @Operation(summary = "Paginated articles", description = "Retrieve articles with pagination parameters")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Paginated articles retrieved successfully"),
+            @ApiResponse(responseCode = "204", description = "No articles found for the requested page")
+    })
     public ResponseEntity<Page<ArticleSaveDTO>> findAllPagination(
+            @Parameter(name = "page", description = "Page number", in = ParameterIn.QUERY)
             @RequestParam (defaultValue = "0") Integer page,
+            @Parameter(name = "size", description = "Number of elements per page", in = ParameterIn.QUERY)
             @RequestParam (defaultValue = "3") Integer size,
+            @Parameter(name = "sortBy", description = "Sorting field", in = ParameterIn.QUERY)
             @RequestParam (defaultValue = "id") String sortBy,
+            @Parameter(name = "direction", description = "Sorting direction", in = ParameterIn.QUERY)
             @RequestParam (defaultValue = "asc") String direction
     ){
         log.info("Received request for paginated articles page={} size={} sortBy={} direction={}", page, size, sortBy, direction);
@@ -97,11 +147,21 @@ public class ArticleController {
     }
 
     @GetMapping("/page-search")
+    @Operation(summary = "Paginated search of articles", description = "Retrieve paginated articles filtered by search criteria")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Paginated search results retrieved successfully"),
+            @ApiResponse(responseCode = "204", description = "No articles found for the given search criteria")
+    })
     public ResponseEntity<Page<ArticleSaveDTO>> findAllPaginationWithSearch(
+            @Parameter(name = "page", description = "Page number", in = ParameterIn.QUERY)
             @RequestParam (defaultValue = "0") Integer page,
+            @Parameter(name = "size", description = "Number of elements per page", in = ParameterIn.QUERY)
             @RequestParam (defaultValue = "3") Integer size,
+            @Parameter(name = "sortBy", description = "Sorting field", in = ParameterIn.QUERY)
             @RequestParam (defaultValue = "id") String sortBy,
+            @Parameter(name = "direction", description = "Sorting direction", in = ParameterIn.QUERY)
             @RequestParam (defaultValue = "asc") String direction,
+            @Parameter(name = "criteria", description = "Optional search keyword", in = ParameterIn.QUERY)
             @RequestParam (required = false) String criteria
     ){
         log.info("Received request for paginated articles with search page={} size={} sortBy={} direction={} criteria={}", page, size, sortBy, direction, criteria);
@@ -118,6 +178,12 @@ public class ArticleController {
     }
 
     @PatchMapping("/{articleId}/author/{authorId}")
+    @Operation(summary = "Assign an author to an article", description = "Assigns an author using path variables for article and author IDs")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Author assigned successfully"),
+            @ApiResponse(responseCode = "404", description = "Article or author not found"),
+            @ApiResponse(responseCode = "409", description = "Author already assigned to this article")
+    })
     public ResponseEntity<ArticleSaveDTO> assigneAuthor(@PathVariable Long articleId, @PathVariable Long authorId){
         log.info("Received request to assign author {} to article {}", authorId, articleId);
         ArticleSaveDTO updatedArticle = articleService.assignAuthor(articleId, authorId);
