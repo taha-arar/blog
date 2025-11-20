@@ -32,9 +32,9 @@ public class Article extends AbstractEntity<Long>{
     private String author;*/
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = true)
+    @JoinColumn(name = "author_id")
     @OnDelete(action = OnDeleteAction.SET_NULL)
-    private Author author;
+    private User author;
 
     private Boolean isActive = true;
 

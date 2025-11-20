@@ -1,17 +1,19 @@
 package com.blog.service;
 
-import com.blog.converter.AuthorMapper;
 import com.blog.dto.AuthorSaveDTO;
 import com.blog.exception.AuthorActiveFlagRequiredException;
 import com.blog.exception.AuthorDuplicateEmailException;
 import com.blog.exception.AuthorNotFoundException;
-import com.blog.model.Author;
-import com.blog.repository.AuthorRepository;
+import com.blog.exception.AuthorPasswordRequiredException;
+import com.blog.model.User;
+import com.blog.model.enums.Role;
+import com.blog.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,23 +23,33 @@ import java.util.List;
 @Slf4j
 public class AuthorServiceImpl implements AuthorService {
 
-    private final AuthorRepository authorRepository;
-    private final AuthorMapper authorMapper;
-
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Long save(AuthorSaveDTO author) {
         log.info("Attempting to save author with email {}", author.getEmail());
-        if(authorRepository.existsByEmail(author.getEmail())) {
+        if(userRepository.existsByEmail(author.getEmail())) {
             log.warn("Author with email {} already exists", author.getEmail());
             throw new AuthorDuplicateEmailException(author.getEmail());
         }
-        Author toBeSaved = authorMapper.toEntity(author);
-        if (toBeSaved.getIsActive() == null) {
-            log.debug("Author {} has no active flag set, defaulting to true", author.getEmail());
-            toBeSaved.setIsActive(true);
+
+        if(author.getPassword() == null || author.getPassword().isBlank()){
+            log.warn("Password missing for author {}", author.getEmail());
+            throw new AuthorPasswordRequiredException();
         }
-        Long id = authorRepository.save(toBeSaved).getId();
+
+        User user = User.builder()
+                .firstName(author.getFirstName())
+                .lastName(author.getLastName())
+                .email(author.getEmail())
+                .password(passwordEncoder.encode(author.getPassword()))
+                .isActive(author.getActive() != null ? author.getActive() : Boolean.TRUE)
+                .role(Role.AUTHOR)
+                .biography(author.getBiography())
+                .domain(author.getDomain())
+                .build();
+        Long id = userRepository.save(user).getId();
         log.info("Author {} saved successfully with id {}", author.getEmail(), id);
         return id;
     }
@@ -45,11 +57,11 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public void delete(Long id) {
         log.info("Attempting to delete author {}", id);
-        if(!authorRepository.existsById(id)) {
+        if(!userRepository.existsById(id)) {
             log.warn("Author {} not found for deletion", id);
             throw new AuthorNotFoundException(id);
         }
-        authorRepository.deleteById(id);
+        userRepository.deleteById(id);
         log.info("Author {} deleted successfully", id);
     }
 
@@ -57,19 +69,40 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public AuthorSaveDTO update(Long id, AuthorSaveDTO authorDTO) {
         log.info("Attempting to update author {}", id);
-        Author author = authorRepository.findById(id)
+        User author = userRepository.findById(id)
                 .orElseThrow(() -> new AuthorNotFoundException(id));
 
         if (authorDTO.getEmail() != null && !authorDTO.getEmail().equalsIgnoreCase(author.getEmail())
-                && authorRepository.existsByEmail(authorDTO.getEmail())) {
+                && userRepository.existsByEmail(authorDTO.getEmail())) {
             log.warn("Duplicate email {} detected during update for author {}", authorDTO.getEmail(), id);
             throw new AuthorDuplicateEmailException(authorDTO.getEmail());
         }
 
-        authorMapper.updateAuthorFromDTO(author, authorDTO);
-        Author saved = authorRepository.save(author);
+        if(authorDTO.getFirstName() != null){
+            author.setFirstName(authorDTO.getFirstName());
+        }
+        if(authorDTO.getLastName() != null){
+            author.setLastName(authorDTO.getLastName());
+        }
+        if(authorDTO.getEmail() != null){
+            author.setEmail(authorDTO.getEmail());
+        }
+        if(authorDTO.getPassword() != null && !authorDTO.getPassword().isBlank()){
+            author.setPassword(passwordEncoder.encode(authorDTO.getPassword()));
+        }
+        if(authorDTO.getActive() != null){
+            author.setIsActive(authorDTO.getActive());
+        }
+        if(authorDTO.getBiography() != null){
+            author.setBiography(authorDTO.getBiography());
+        }
+        if(authorDTO.getDomain() != null){
+            author.setDomain(authorDTO.getDomain());
+        }
+
+        User savedUser = userRepository.save(author);
         log.info("Author {} updated successfully", id);
-        return authorMapper.toDTO(saved);
+        return toDTO(savedUser);
     }
 
     @Override
@@ -80,7 +113,7 @@ public class AuthorServiceImpl implements AuthorService {
             throw new AuthorActiveFlagRequiredException();
         }
 
-        Author author = authorRepository.findById(id)
+        Author author = userRepository.findById(id)
                 .orElseThrow(() -> new AuthorNotFoundException(id));
 
         if (active.equals(author.getIsActive())) {
@@ -89,7 +122,7 @@ public class AuthorServiceImpl implements AuthorService {
         }
 
         author.setIsActive(active);
-        authorRepository.save(author);
+        userRepository.save(author);
         log.info("Author {} active state updated to {}", id, active);
         return "Author " + (active ? "activated" : "deactivated") + " successfully.";
     }
@@ -97,7 +130,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public AuthorSaveDTO findById(Long id) {
         log.info("Fetching author {}", id);
-        Author author = authorRepository.findById(id)
+        Author author = userRepository.findById(id)
                 .orElseThrow(() -> new AuthorNotFoundException(id));
         log.info("Author {} fetched successfully", id);
         return authorMapper.toDTO(author);
@@ -106,7 +139,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public List<AuthorSaveDTO> findAll() {
         log.info("Fetching all authors");
-        return authorRepository.findAll()
+        return userRepository.findAll()
                 .stream()
                 .map(authorMapper::toDTO)
                 .toList();
@@ -115,15 +148,27 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public Page<AuthorSaveDTO> findAllPagination(Pageable pageable) {
         log.info("Fetching paginated authors page={} size={}", pageable.getPageNumber(), pageable.getPageSize());
-        return authorRepository.findAll(pageable)
+        return userRepository.findAll(pageable)
                 .map(authorMapper::toDTO);
     }
 
     @Override
     public Page<AuthorSaveDTO> findAllPaginationWithSearch(String criteria, Pageable pageable) {
         log.info("Fetching paginated authors with search criteria={} page={} size={}", criteria, pageable.getPageNumber(), pageable.getPageSize());
-        return authorRepository.findAllWithSearch(criteria, pageable)
+        return userRepository.findAllWithSearch(criteria, pageable)
                 .map(authorMapper::toDTO);
+    }
+
+    private  AuthorSaveDTO  toDTO(User author) {
+        AuthorSaveDTO dto = new AuthorSaveDTO();
+        dto.setId(author.getId());
+        dto.setFirstName(author.getFirstName());
+        dto.setLastName(author.getLastName());
+        dto.setEmail(author.getEmail());
+        dto.setActive(author.getIsActive());
+        dto.setBiography(author.getBiography());
+        dto.setDomain(author.getDomain());
+        return dto;
     }
 
 }

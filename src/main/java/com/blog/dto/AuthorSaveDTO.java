@@ -14,6 +14,8 @@ import lombok.*;
 @ToString
 public class AuthorSaveDTO {
 
+    private Long id;
+
     @NotBlank(message = "Le prenom est obligatoire")
     private String firstName;
 
@@ -31,4 +33,7 @@ public class AuthorSaveDTO {
     private Domain domain;
 
     private Boolean active;
+
+    @Size(min = 8, message = "Le  mot  de passe doit contenir au moins 8 caractères")
+    private String password;
 }

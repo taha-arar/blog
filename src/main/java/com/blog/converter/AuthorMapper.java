@@ -1,7 +1,6 @@
 package com.blog.converter;
 
 import com.blog.dto.AuthorSaveDTO;
-import com.blog.model.Author;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
