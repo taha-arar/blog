@@ -26,3 +26,12 @@ springdoc:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
+
+security:
+  jwt:
+    secret: aezsgd2548256frgrgrfgheehfr28418236jdxyuedjkso2548fozidydn285415dd
+    expiration-minutes: 30
+    cookie-name: ACCESS_TOKEN
+    cookie-secure: false
+    cookie-path: /
+    cookie-same-site: Lax
