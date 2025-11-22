@@ -4,7 +4,10 @@ import com.blog.converter.ArticleMapper;
 import com.blog.dto.ArticleSaveDTO;
 import com.blog.exception.*;
 import com.blog.model.Article;
+import com.blog.model.User;
+import com.blog.model.enums.Role;
 import com.blog.repository.ArticleRepository;
+import com.blog.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +26,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
-    private final AuthorRepository authorRepository;
+    private final UserRepository userRepository;
 
 
 /*    @Override
@@ -59,8 +62,12 @@ public class ArticleServiceImpl implements ArticleService {
             throw new ArticleRequiredAuthorException();
         }
 
-        Author author = authorRepository.findById(article.getAuthorId())
+        User author = userRepository.findById(article.getAuthorId())
                 .orElseThrow(() -> new AuthorNotFoundException(article.getAuthorId()));
+        if(author.getRole() != Role.AUTHOR){
+            log.info("User {} is not registred as Author", article.getAuthorId());
+            throw new AuthorNotFoundException(article.getAuthorId());
+        }
 
         Article savedArticle = articleMapper.toEntity(article);
         savedArticle.setAuthor(author);
@@ -171,8 +178,12 @@ public class ArticleServiceImpl implements ArticleService {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new ArticleNotFoundException(articleId));
 
-        Author author = authorRepository.findById(authorId)
+        User author = userRepository.findById(authorId)
                 .orElseThrow(() -> new AuthorNotFoundException(authorId));
+        if(author.getRole() != Role.AUTHOR){
+            log.info("User {} is not registred as Author", authorId);
+            throw new AuthorNotFoundException(authorId);
+        }
 
         if (article.getAuthor() != null && authorId.equals(article.getAuthor().getId())) {
             log.warn("Author {} already assigned to article {}", authorId, articleId);

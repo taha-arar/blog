@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -113,7 +114,7 @@ public class AuthorServiceImpl implements AuthorService {
             throw new AuthorActiveFlagRequiredException();
         }
 
-        Author author = userRepository.findById(id)
+        User author = userRepository.findById(id)
                 .orElseThrow(() -> new AuthorNotFoundException(id));
 
         if (active.equals(author.getIsActive())) {
@@ -130,10 +131,10 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public AuthorSaveDTO findById(Long id) {
         log.info("Fetching author {}", id);
-        Author author = userRepository.findById(id)
+        User author = userRepository.findById(id)
                 .orElseThrow(() -> new AuthorNotFoundException(id));
         log.info("Author {} fetched successfully", id);
-        return authorMapper.toDTO(author);
+        return toDTO(author);
     }
 
     @Override
@@ -141,22 +142,40 @@ public class AuthorServiceImpl implements AuthorService {
         log.info("Fetching all authors");
         return userRepository.findAll()
                 .stream()
-                .map(authorMapper::toDTO)
+                .map(this::toDTO)
                 .toList();
     }
 
     @Override
     public Page<AuthorSaveDTO> findAllPagination(Pageable pageable) {
         log.info("Fetching paginated authors page={} size={}", pageable.getPageNumber(), pageable.getPageSize());
-        return userRepository.findAll(pageable)
-                .map(authorMapper::toDTO);
+        return userRepository.findByRole(Role.AUTHOR, pageable)
+                .map(this::toDTO);
     }
 
     @Override
     public Page<AuthorSaveDTO> findAllPaginationWithSearch(String criteria, Pageable pageable) {
         log.info("Fetching paginated authors with search criteria={} page={} size={}", criteria, pageable.getPageNumber(), pageable.getPageSize());
-        return userRepository.findAllWithSearch(criteria, pageable)
-                .map(authorMapper::toDTO);
+        Page<User> users = userRepository.findByRole(Role.AUTHOR, pageable);
+        if (criteria == null || criteria.isBlank()) {
+            return users.map(this::toDTO);
+        }
+
+        String filter = criteria.toLowerCase();
+        List<User> filtered = users.stream()
+                .filter(user -> userFilter(user, filter))
+                .toList();
+        List<AuthorSaveDTO> dtos = filtered.stream().map(this::toDTO).toList();
+        return new PageImpl<>(dtos, pageable, dtos.size());
+    }
+
+    private boolean userFilter(User user, String filter){
+        return (user.getFirstName() != null && user.getFirstName().toLowerCase().contains(filter)
+        || user.getLastName() != null && user.getLastName().toLowerCase().contains(filter)
+        || user.getEmail() != null && user.getEmail().toLowerCase().contains(filter)
+        || user.getBiography() != null && user.getBiography().toLowerCase().contains(filter)
+        || user.getDomain() != null && user.getDomain().name().toLowerCase().contains(filter)
+        );
     }
 
     private  AuthorSaveDTO  toDTO(User author) {

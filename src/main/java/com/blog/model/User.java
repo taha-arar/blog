@@ -51,7 +51,6 @@ public class User extends AbstractEntity<Long> implements UserDetails {
     private String biography;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Domain domain;
 
     @OneToMany(mappedBy = "author")
