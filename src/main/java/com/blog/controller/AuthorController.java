@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class AuthorController {
 
     private final AuthorService authorService;
 
+    @PreAuthorize("hasRole('SUPERADMIN')")
     @PostMapping
     @Operation(summary = "Create a new author", description = "Creates an author with the provided data")
     @ApiResponses({
@@ -43,6 +45,7 @@ public class AuthorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAuthor);
     }
 
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete an author", description = "Deletes an author identified by its ID")
     @ApiResponses({
@@ -56,6 +59,7 @@ public class AuthorController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @PreAuthorize("hasRole('SUPERADMIN')")
     @PutMapping("/{id}")
     @Operation(summary = "Update an author", description = "Updates an author identified by its ID")
     @ApiResponses({
@@ -71,6 +75,7 @@ public class AuthorController {
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @PatchMapping("/active/{id}")
     @Operation(summary = "Activate or deactivate an author", description = "Update the active flag for an author")
     @ApiResponses({
@@ -85,6 +90,7 @@ public class AuthorController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN') or (hasRole('AUTHOR') and #id == principal.id)")
     @GetMapping("/{id}")
     @Operation(summary = "Find author by ID", description = "Retrieves an author using its identifier")
     @ApiResponses({

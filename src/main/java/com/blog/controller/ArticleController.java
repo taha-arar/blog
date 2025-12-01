@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class ArticleController {
     }
 
 
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'AUTHOR')")
     @PostMapping
     @Operation(summary = "Create a new article", description = "Creates an article with the provided data")
     @ApiResponses({
@@ -46,6 +48,7 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.CREATED).body(articleService.save(article));
     }
 
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'AUTHOR')")
     @PutMapping("/{id}")
     @Operation(summary = "Update an existing article", description = "Updates an article identified by its ID")
     @ApiResponses({
@@ -60,6 +63,7 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @PatchMapping("/active/{id}")
     @Operation(summary = "Activate or deactivate an article", description = "Update the active flag for an article")
     @ApiResponses({
@@ -72,6 +76,7 @@ public class ArticleController {
         return ResponseEntity.ok(articleService.active(id, active));
     }
 
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @PatchMapping("/{id}/author")
     @Operation(summary = "Assign an author to an article", description = "Associates an author to an existing article")
     @ApiResponses({
@@ -86,6 +91,7 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     @Operation(summary = "Find article by ID", description = "Retrieves an article using its identifier")
     @ApiResponses({
@@ -177,6 +183,7 @@ public class ArticleController {
 
     }
 
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @PatchMapping("/{articleId}/author/{authorId}")
     @Operation(summary = "Assign an author to an article", description = "Assigns an author using path variables for article and author IDs")
     @ApiResponses({
