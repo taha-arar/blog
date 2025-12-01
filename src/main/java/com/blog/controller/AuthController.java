@@ -4,13 +4,16 @@ import com.blog.config.JwtProperties;
 import com.blog.dto.AuthResponse;
 import com.blog.dto.LoginRequest;
 import com.blog.dto.RegisterRequest;
+import com.blog.model.User;
 import com.blog.record.AuthenticationResult;
 import com.blog.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -50,6 +53,23 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .build();
 
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<AuthResponse> currentUser(Authentication authentication) {
+        if(authentication == null || !(authentication.getPrincipal() instanceof User user)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        log.info("User {} retrieved successfully", user.getEmail());
+        AuthResponse authResponse = AuthResponse.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .active(user.getIsActive())
+                .role(user.getRole())
+                .build();
+        return ResponseEntity.ok(authResponse);
     }
 
     private ResponseCookie buildTokenCookie(String token) {
