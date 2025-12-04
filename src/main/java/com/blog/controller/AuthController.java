@@ -36,7 +36,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(LoginRequest loginRequest){
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest){
         AuthenticationResult authenticationResult = authService.login(loginRequest);
         log.info("User  {} logged in successfully", loginRequest.getEmail());
         ResponseCookie cookie =buildTokenCookie(authenticationResult.token());
