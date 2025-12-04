@@ -1,6 +1,6 @@
 package com.blog.service;
 
-import com.blog.dto.AuthorSaveDTO;
+import com.blog.dto.UserSaveDTO;
 import com.blog.exception.AuthorActiveFlagRequiredException;
 import com.blog.exception.AuthorDuplicateEmailException;
 import com.blog.exception.AuthorNotFoundException;
@@ -28,7 +28,7 @@ public class AuthorServiceImpl implements AuthorService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public Long save(AuthorSaveDTO author) {
+    public Long save(UserSaveDTO author) {
         log.info("Attempting to save author with email {}", author.getEmail());
         if(userRepository.existsByEmail(author.getEmail())) {
             log.warn("Author with email {} already exists", author.getEmail());
@@ -68,7 +68,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Transactional
     @Override
-    public AuthorSaveDTO update(Long id, AuthorSaveDTO authorDTO) {
+    public UserSaveDTO update(Long id, UserSaveDTO authorDTO) {
         log.info("Attempting to update author {}", id);
         User author = userRepository.findById(id)
                 .orElseThrow(() -> new AuthorNotFoundException(id));
@@ -129,7 +129,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public AuthorSaveDTO findById(Long id) {
+    public UserSaveDTO findById(Long id) {
         log.info("Fetching author {}", id);
         User author = userRepository.findById(id)
                 .orElseThrow(() -> new AuthorNotFoundException(id));
@@ -138,7 +138,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public List<AuthorSaveDTO> findAll() {
+    public List<UserSaveDTO> findAll() {
         log.info("Fetching all authors");
         return userRepository.findAll()
                 .stream()
@@ -147,14 +147,14 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public Page<AuthorSaveDTO> findAllPagination(Pageable pageable) {
+    public Page<UserSaveDTO> findAllPagination(Pageable pageable) {
         log.info("Fetching paginated authors page={} size={}", pageable.getPageNumber(), pageable.getPageSize());
         return userRepository.findByRole(Role.AUTHOR, pageable)
                 .map(this::toDTO);
     }
 
     @Override
-    public Page<AuthorSaveDTO> findAllPaginationWithSearch(String criteria, Pageable pageable) {
+    public Page<UserSaveDTO> findAllPaginationWithSearch(String criteria, Pageable pageable) {
         log.info("Fetching paginated authors with search criteria={} page={} size={}", criteria, pageable.getPageNumber(), pageable.getPageSize());
         Page<User> users = userRepository.findByRole(Role.AUTHOR, pageable);
         if (criteria == null || criteria.isBlank()) {
@@ -165,7 +165,7 @@ public class AuthorServiceImpl implements AuthorService {
         List<User> filtered = users.stream()
                 .filter(user -> userFilter(user, filter))
                 .toList();
-        List<AuthorSaveDTO> dtos = filtered.stream().map(this::toDTO).toList();
+        List<UserSaveDTO> dtos = filtered.stream().map(this::toDTO).toList();
         return new PageImpl<>(dtos, pageable, dtos.size());
     }
 
@@ -178,8 +178,8 @@ public class AuthorServiceImpl implements AuthorService {
         );
     }
 
-    private  AuthorSaveDTO  toDTO(User author) {
-        AuthorSaveDTO dto = new AuthorSaveDTO();
+    private  UserSaveDTO  toDTO(User author) {
+        UserSaveDTO dto = new UserSaveDTO();
         dto.setId(author.getId());
         dto.setFirstName(author.getFirstName());
         dto.setLastName(author.getLastName());

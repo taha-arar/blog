@@ -1,6 +1,6 @@
 package com.blog.controller;
 
-import com.blog.dto.AuthorSaveDTO;
+import com.blog.dto.UserSaveDTO;
 import com.blog.service.AuthorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,7 +38,7 @@ public class AuthorController {
             @ApiResponse(responseCode = "400", description = "Invalid author data"),
             @ApiResponse(responseCode = "409", description = "Author email already exists")
     })
-    public ResponseEntity<Long> save(@RequestBody AuthorSaveDTO author){
+    public ResponseEntity<Long> save(@RequestBody UserSaveDTO author){
         log.info("Received request to create author with email {}", author.getEmail());
         Long savedAuthor = authorService.save(author);
         log.info("Author created successfully with id {}", savedAuthor);
@@ -68,9 +68,9 @@ public class AuthorController {
             @ApiResponse(responseCode = "404", description = "Author not found"),
             @ApiResponse(responseCode = "409", description = "Author email already exists")
     })
-    public ResponseEntity<AuthorSaveDTO> update(@PathVariable Long id, @RequestBody AuthorSaveDTO author) {
+    public ResponseEntity<UserSaveDTO> update(@PathVariable Long id, @RequestBody UserSaveDTO author) {
         log.info("Received request to update author {}", id);
-        AuthorSaveDTO updated = authorService.update(id, author);
+        UserSaveDTO updated = authorService.update(id, author);
         log.info("Author {} updated successfully", id);
         return ResponseEntity.status(HttpStatus.OK).body(updated);
     }
@@ -97,9 +97,9 @@ public class AuthorController {
             @ApiResponse(responseCode = "200", description = "Author retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Author not found")
     })
-    public ResponseEntity<AuthorSaveDTO> findById(@PathVariable("id") Long id) {
+    public ResponseEntity<UserSaveDTO> findById(@PathVariable("id") Long id) {
         log.info("Received request to fetch author {}", id);
-        AuthorSaveDTO author = authorService.findById(id);
+        UserSaveDTO author = authorService.findById(id);
         log.info("Author {} retrieved successfully", id);
         return ResponseEntity.status(HttpStatus.OK).body(author);
     }
@@ -110,9 +110,9 @@ public class AuthorController {
             @ApiResponse(responseCode = "200", description = "Authors retrieved successfully"),
             @ApiResponse(responseCode = "204", description = "No authors found")
     })
-    public ResponseEntity<List<AuthorSaveDTO>> findAll() {
+    public ResponseEntity<List<UserSaveDTO>> findAll() {
         log.info("Received request to list all authors");
-        List<AuthorSaveDTO> authors = authorService.findAll();
+        List<UserSaveDTO> authors = authorService.findAll();
         if (authors.isEmpty()) {
             log.info("No authors found");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(authors);
@@ -127,7 +127,7 @@ public class AuthorController {
             @ApiResponse(responseCode = "200", description = "Paginated authors retrieved successfully"),
             @ApiResponse(responseCode = "204", description = "No authors found for the requested page")
     })
-    public ResponseEntity<Page<AuthorSaveDTO>> findAllPagination(
+    public ResponseEntity<Page<UserSaveDTO>> findAllPagination(
             @Parameter(name = "page", description = "Page number", in = ParameterIn.QUERY)
             @RequestParam(defaultValue = "0") Integer page,
             @Parameter(name = "size", description = "Number of elements per page", in = ParameterIn.QUERY)
@@ -139,7 +139,7 @@ public class AuthorController {
     ) {
         log.info("Received request for paginated authors page={} size={} sortBy={} direction={}", page, size, sortBy, direction);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(direction), sortBy));
-        Page<AuthorSaveDTO> authors = authorService.findAllPagination(pageable);
+        Page<UserSaveDTO> authors = authorService.findAllPagination(pageable);
         if (authors.isEmpty()) {
             log.info("Paginated authors result is empty");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(authors);
@@ -154,7 +154,7 @@ public class AuthorController {
             @ApiResponse(responseCode = "200", description = "Paginated search results retrieved successfully"),
             @ApiResponse(responseCode = "204", description = "No authors found for the given search criteria")
     })
-    public ResponseEntity<Page<AuthorSaveDTO>> findAllPaginationWithSearch(
+    public ResponseEntity<Page<UserSaveDTO>> findAllPaginationWithSearch(
             @Parameter(name = "page", description = "Page number", in = ParameterIn.QUERY)
             @RequestParam(defaultValue = "0") Integer page,
             @Parameter(name = "size", description = "Number of elements per page", in = ParameterIn.QUERY)
@@ -168,7 +168,7 @@ public class AuthorController {
     ) {
         log.info("Received request for paginated authors with search page={} size={} sortBy={} direction={} criteria={}", page, size, sortBy, direction, criteria);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(direction), sortBy));
-        Page<AuthorSaveDTO> authors = authorService.findAllPaginationWithSearch(criteria, pageable);
+        Page<UserSaveDTO> authors = authorService.findAllPaginationWithSearch(criteria, pageable);
         if (authors.isEmpty()) {
             log.info("Paginated authors search result is empty");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(authors);

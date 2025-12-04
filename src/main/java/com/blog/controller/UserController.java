@@ -1,6 +1,6 @@
 package com.blog.controller;
 
-import com.blog.dto.AuthorSaveDTO;
+import com.blog.dto.UserSaveDTO;
 import com.blog.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('SUPERADMIN')")
     @PostMapping
-    public ResponseEntity<Long> save(@RequestBody AuthorSaveDTO user){
+    public ResponseEntity<Long> save(@RequestBody UserSaveDTO user){
         log.info("Attempting to save user with email {}", user.getEmail());
         Long savedUser = userService.save(user);
         log.info("User created successfully with id {}", savedUser);

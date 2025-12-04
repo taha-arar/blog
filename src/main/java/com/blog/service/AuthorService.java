@@ -1,6 +1,6 @@
 package com.blog.service;
 
-import com.blog.dto.AuthorSaveDTO;
+import com.blog.dto.UserSaveDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -8,20 +8,20 @@ import java.util.List;
 
 public interface AuthorService {
 
-    Long save(AuthorSaveDTO author);
+    Long save(UserSaveDTO author);
 
     void delete(Long id);
 
-    AuthorSaveDTO update(Long id, AuthorSaveDTO author);
+    UserSaveDTO update(Long id, UserSaveDTO author);
 
     String active(Long id, Boolean active);
 
-    AuthorSaveDTO findById(Long id);
+    UserSaveDTO findById(Long id);
 
-    List<AuthorSaveDTO> findAll();
+    List<UserSaveDTO> findAll();
 
-    Page<AuthorSaveDTO> findAllPagination(Pageable pageable);
+    Page<UserSaveDTO> findAllPagination(Pageable pageable);
 
-    Page<AuthorSaveDTO> findAllPaginationWithSearch(String criteria, Pageable pageable);
+    Page<UserSaveDTO> findAllPaginationWithSearch(String criteria, Pageable pageable);
 
 }

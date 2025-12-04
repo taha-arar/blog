@@ -13,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class AuthorSaveDTO {
+public class UserSaveDTO {
 
     private Long id;
 
@@ -30,7 +30,7 @@ public class AuthorSaveDTO {
     @Size(max = 500, message = "La biographie ne peut pas dépasser 500 caractères")
     private String biography;
 
-    @Column(nullable = false)
+    @Column
     private Domain domain;
 
     private Boolean active;
@@ -40,3 +40,4 @@ public class AuthorSaveDTO {
 
     private Role role;
 }
+

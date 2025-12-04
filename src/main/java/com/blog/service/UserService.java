@@ -1,8 +1,8 @@
 package com.blog.service;
 
-import com.blog.dto.AuthorSaveDTO;
+import com.blog.dto.UserSaveDTO;
 
 public interface UserService {
 
-    Long save(AuthorSaveDTO user);
+    Long save(UserSaveDTO user);
 }

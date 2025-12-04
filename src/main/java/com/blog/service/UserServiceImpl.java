@@ -1,6 +1,6 @@
 package com.blog.service;
 
-import com.blog.dto.AuthorSaveDTO;
+import com.blog.dto.UserSaveDTO;
 import com.blog.exception.AuthorDuplicateEmailException;
 import com.blog.exception.AuthorPasswordRequiredException;
 import com.blog.exception.UserValidEmailException;
@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public Long save(AuthorSaveDTO userTO) {
+    public Long save(UserSaveDTO userTO) {
         log.info("Attempting to save user with email {}", userTO.getEmail());
 
         if(userTO.getEmail() == null || userTO.getEmail().isEmpty()) {
