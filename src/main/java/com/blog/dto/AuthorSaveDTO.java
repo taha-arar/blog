@@ -1,6 +1,7 @@
 package com.blog.dto;
 
 import com.blog.model.enums.Domain;
+import com.blog.model.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -36,4 +37,6 @@ public class AuthorSaveDTO {
 
     @Size(min = 8, message = "Le  mot  de passe doit contenir au moins 8 caractères")
     private String password;
+
+    private Role role;
 }
